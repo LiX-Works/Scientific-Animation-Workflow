@@ -1,0 +1,54 @@
+name: Publish film playback page
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          ref: main
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install documentation renderer
+        run: python -m pip install -r tools/requirements.txt
+      - name: Download the selected release film
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/media"
+          gh release download edl-v5 --pattern edl-gating-v5.mp4 --pattern edl-gating-v5.en.vtt --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/media"
+          cd "$RUNNER_TEMP/media"
+          sha256sum --check SHA256SUMS.txt
+      - name: Build static viewing site
+        run: python tools/prepare-gallery.py --video "$RUNNER_TEMP/media/edl-gating-v5.mp4" --out "$RUNNER_TEMP/site"
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/site
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

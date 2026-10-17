@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="250" viewBox="0 0 1280 250" role="img" aria-labelledby="title desc">
+  <title id="title">Scientific animation production in three connected stages</title>
+  <desc id="desc">Frame the science, direct and review, then implement and render. Human direction and scientific judgment connect to AI-assisted production and editable output.</desc>
+  <rect width="1280" height="250" rx="14" fill="#edf3f9"/>
+  <text x="32" y="39" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="2" fill="#506c87">FROM SCIENTIFIC QUESTION TO FINISHED FILM</text>
+  <g font-family="Segoe UI,Arial,sans-serif">
+    <rect x="26" y="65" width="380" height="158" rx="10" fill="#ffffff"/>
+    <rect x="450" y="65" width="380" height="158" rx="10" fill="#ffffff"/>
+    <rect x="874" y="65" width="380" height="158" rx="10" fill="#ffffff"/>
+    <g font-size="16" font-weight="700" fill="#ae7824"><text x="48" y="99">01</text><text x="472" y="99">02</text><text x="896" y="99">03</text></g>
+    <g font-size="25" font-weight="650" fill="#1c334a"><text x="48" y="135">Frame the science</text><text x="472" y="135">Direct and review</text><text x="896" y="135">Implement and render</text></g>
+    <g font-size="17" fill="#52697e"><text x="48" y="170">Mechanism · audience · limits</text><text x="48" y="198">Clarify what must be understood.</text><text x="472" y="170">Visual brief · specific feedback</text><text x="472" y="198">Judge meaning, clarity and rhythm.</text><text x="896" y="170">Scene · sound · shared timeline</text><text x="896" y="198">Keep the film reproducible and editable.</text></g>
+    <g font-size="28" fill="#6e8baa"><text x="417" y="151">→</text><text x="841" y="151">→</text></g>
+  </g>
+</svg>

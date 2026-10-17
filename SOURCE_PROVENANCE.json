@@ -1,0 +1,30 @@
+{
+  "case": "edl-gating",
+  "production_source": "Received v5 code package with legacy v3 directory naming",
+  "archive_sha256": "ed32bf19e5b490d0bdd571bc014addb982acc7069ad67fe14c2e33e5c9dd518f",
+  "source_preparation_date": "2026-10-17",
+  "scene_html_and_timeline": "Preserved byte-for-byte from the production package",
+  "operational_changes": [
+    "Live full-duration render planning",
+    "Portable browser and file paths",
+    "Self-contained local scene serving",
+    "Portable score and encode entry points",
+    "Explicit output protection and dependency instructions"
+  ],
+  "editorial_changes": [
+    "English documentation and Chinese root README",
+    "Curated production and prompt notes",
+    "Bilingual static presentation with optional English explanation subtitles",
+    "Explicit code/media licensing and references"
+  ],
+  "selected_delivered_video": {
+    "public_filename": "edl-gating-v5.mp4",
+    "bytes": 95478277,
+    "sha256": "3667824f2ae315eea105cbb4fb64e5a8395e390e79094f49459e84b83b6aec25",
+    "is_new_render_from_prepared_checkout": false
+  },
+  "human_role": "Scientific framing, creative direction, review and decisions",
+  "production_assistance": "Web-based GPT coordination and Grok Bot implementation",
+  "specific_production_model": "Not established by available execution records",
+  "private_records": "Full conversations and machine logs are excluded"
+}

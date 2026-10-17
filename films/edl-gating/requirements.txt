@@ -1,0 +1,4 @@
+# Core score synthesis and optional motion-blur averaging.
+numpy>=1.26,<3
+scipy>=1.11,<2
+Pillow>=10,<14
