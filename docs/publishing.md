@@ -35,7 +35,7 @@ For a GitHub Pages deployment, copy the selected release asset into that deploym
 
 After deployment, check the real public URL: load, play, seek near the end, confirm audio and captions, and follow both download and source links. Add the working watch link to the root README only after that check. Preparing these files does not itself create a Release or enable Pages.
 
-This repository's `Publish film playback page` workflow downloads the selected `edl-v5` Release film, verifies its supplied checksums, and stages the site without putting the video in Git history. It runs when a release is published or when dispatched manually. GitHub Pages must use the GitHub Actions publishing source. The repository README remains the main introduction; its large preview links directly to the film section of the hosted player.
+This repository's `Publish film playback page` workflow downloads the selected `edl-v5` Release film, verifies its supplied checksums, and stages the site without putting the video in Git history. It runs from `main` when presentation files change, or when dispatched manually. Publish the selected Release asset before the first deployment. GitHub Pages must use the GitHub Actions publishing source; keeping deployment runs on `main` respects the environment's branch protection. The repository README remains the main introduction; its large preview links directly to the film section of the hosted player.
 
 ## Reuse permissions
 

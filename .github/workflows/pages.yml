@@ -2,8 +2,18 @@ name: Publish film playback page
 
 on:
   workflow_dispatch:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pages.yml'
+      - 'README*.md'
+      - 'gallery/**'
+      - 'assets/**'
+      - 'docs/**'
+      - 'films/**/README*.md'
+      - 'films/**/docs/**'
+      - 'tools/prepare-gallery.py'
+      - 'tools/requirements.txt'
 
 permissions:
   contents: read
