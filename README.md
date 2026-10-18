@@ -15,6 +15,8 @@
 **FULL FILM · 2:26 · 1080p / 30 fps · Music & sound effects**  
 Chinese on-screen graphics, with optional English explanation subtitles. The animation above is a short, silent preview; the selected full-quality film is 95.48 MB.
 
+**Background:** the topic comes from a lecture in an undergraduate sensors course. It was not an assignment. Inspired by the recent wave of programmatic films made with Claude Opus, the creator took it up as a self-directed project to explore AI-assisted scientific animation, and went as far as discarding a complete first version to rebuild the film from scratch (see below).
+
 **The question:** how can a larger gate capacitance achieve the same change in channel charge at a lower gate voltage?
 
 The film follows one device from a two-dimensional cross-section into a three-dimensional electrolyte interface, then returns to compare two gating schemes. It explains established course physics through a continuous visual narrative.
@@ -25,7 +27,7 @@ The comparison does not imply weaker local interface fields or a higher intrinsi
 
 ## How review shaped the result
 
-The creator organized the scientific content, set the visual direction and reviewed successive versions. A web GPT conversation helped develop the brief; Grok Bot assisted with scene code, captions, synthesized music and sound effects, and rendering. Human review connected the scientific meaning to concrete changes in the film.
+The creator organized the scientific content, set the visual direction and reviewed successive versions. A web GPT conversation helped develop the brief; Grok Bot, which was announced in October 2026 to route tasks to back-end models including Claude Opus 5.5, assisted with scene code, captions, synthesized music and sound effects, and rendering. Human review connected the scientific meaning to concrete changes in the film.
 
 ![Earlier and final macro-interface views, showing a cutaway and interface grid that separate the electrolyte from the channel](assets/edl-clarity-comparison.jpg)
 

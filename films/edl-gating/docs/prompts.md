@@ -22,7 +22,7 @@ The production documents record what was implemented. A request in a prompt alon
 
 > Treat this as a new work. Do not inherit the previous film's structure, rhythm, wording or visual template.
 
-> This is a course assignment explaining physics already taught in class. Do not present it as my invention.
+> This explains physics already taught in class. Do not present it as my invention.
 
 > Let the image be bold and the language restrained. Let the animation be striking and the physical explanation accurate.
 

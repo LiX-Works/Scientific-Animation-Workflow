@@ -1,6 +1,6 @@
 # Production Notes: Electric Double-Layer Gating
 
-This case began as a course assignment: explain how electric double-layer gating can reduce the voltage needed to control a transistor channel, and how that relates to certain gate-related failure risks. The task was to communicate known physics through animation, rather than claim a new device principle.
+This case began with a topic from a lecture in an undergraduate sensors course: how electric double-layer gating can reduce the voltage needed to control a transistor channel, and how that relates to certain gate-related failure risks. The course did not require an animation. The contributor took up the topic as a self-directed exercise in AI-assisted scientific animation. The aim was to communicate known physics, rather than claim a new device principle.
 
 The finished work is a collaboration between a human contributor and AI tools. The human role is visible in the scientific boundaries, the decision to restart, the visual brief and the review that shaped the film.
 

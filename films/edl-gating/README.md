@@ -2,7 +2,7 @@
 
 **How a larger effective gate capacitance can reduce the voltage needed to control a transistor channel.**
 
-This 2 min 26 s scientific animation follows a transistor from a flat cross-section into a three-dimensional interface, then compares conventional and electric double-layer (EDL) gating at the **same target change in channel charge**. It was made for a university course to explain established physics, with Chinese on-screen text and a synthesized soundtrack. The gallery adds an optional English explanation track; it summarizes the scientific sequence rather than translating every graphic label.
+This 2 min 26 s scientific animation follows a transistor from a flat cross-section into a three-dimensional interface, then compares conventional and electric double-layer (EDL) gating at the **same target change in channel charge**. The topic comes from a lecture in an undergraduate sensors course. The film was a self-directed project rather than an assignment, and explains established physics with Chinese on-screen text and a synthesized soundtrack. The gallery adds an optional English explanation track; it summarizes the scientific sequence rather than translating every graphic label.
 
 [Watch the film](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/edl-v5/edl-gating-v5.mp4) · [How it was made](docs/production-notes.md) · [Render or modify it](docs/rendering.md) · [Scientific scope](docs/scientific-scope.md)
 
@@ -14,7 +14,7 @@ Particle counts, distances and the breakdown sequence are explanatory constructi
 
 ## What this case demonstrates
 
-The human contributor selected the course problem, organized the physical explanation, developed the creative brief with a web-based GPT assistant, and reviewed successive versions for clarity, pace, color and physical meaning. Grok Bot assisted with animation code, camera design, synthesized audio and rendering. The production record does not establish its underlying model identity.
+The human contributor chose the topic from a course lecture, organized the physical explanation, developed the creative brief with a web-based GPT assistant, and reviewed successive versions for clarity, pace, color and physical meaning. Grok Bot assisted with animation code, camera design, synthesized audio and rendering. The platform was announced to route tasks to back-end models including Claude Opus 5.5; the model used for each step is not visible in the production record.
 
 The clearest example of human review is the crowded electrolyte scene: the contributor proposed removing the front third of the upper volume and adding an interface grid. The revised scene uses those cues to separate the ion layer from the channel. Other revisions addressed rendering flicker, a gap in the illustrated electron channel, excessive glare, color ambiguity and an overlong reading rhythm.
 

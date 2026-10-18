@@ -4,12 +4,12 @@
 
 | Contributor or tool | Role |
 |---|---|
-| Human project contributor | Selected the course topic; organized the physical explanation and its limits; set the creative direction; reviewed clarity, pacing, charge colors, spatial separation and the breakdown illustration; requested and selected revisions |
+| Human project contributor | Chose the topic from a course lecture; organized the physical explanation and its limits; set the creative direction; reviewed clarity, pacing, charge colors, spatial separation and the breakdown illustration; requested and selected revisions |
 | Web-based GPT assistant | Helped formulate the brief and coordinate production requirements |
 | Grok Bot | Assisted with scene and camera code, captions, synthesized music and effects, rendering and iterative production |
 | Codex | Assisted with public source preparation, documentation, portability work and viewing-copy checks |
 
-The project is credited as **Scientific Animation Workflow**. Personal identifying information and full private conversations are not included. Service names identify production roles; the surviving records do not establish the underlying model used by Grok Bot. Names in reference-repository titles are not evidence of the model that produced this film.
+The project is credited as **Scientific Animation Workflow**. Personal identifying information and full private conversations are not included. Service names identify production roles. Grok Bot was announced in October 2026 to route tasks to back-end models including Claude Opus 5.5, but users cannot see which model handles each step, so the surviving records do not establish the model used for any specific part of this film. Names in reference-repository titles are not evidence of the model that produced this film.
 
 ## Original project material
 
