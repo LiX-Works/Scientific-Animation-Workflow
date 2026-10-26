@@ -1,30 +1,57 @@
 {
+  "schema_version": 2,
   "case": "edl-gating",
-  "production_source": "Received v5 code package with legacy v3 directory naming",
-  "archive_sha256": "ed32bf19e5b490d0bdd571bc014addb982acc7069ad67fe14c2e33e5c9dd518f",
-  "source_preparation_date": "2026-10-17",
-  "scene_html_and_timeline": "Preserved byte-for-byte from the production package",
+  "current_edition": "English showcase edition",
+  "source_preparation_date": "2026-10-25",
+  "current_source": "Reviewed English source revised from the received v5 production package",
+  "scene_html_and_timeline": "Revised for the English 85-second edition; not byte-identical to the historical Chinese source",
   "operational_changes": [
-    "Live full-duration render planning",
-    "Portable browser and file paths",
-    "Self-contained local scene serving",
-    "Portable score and encode entry points",
-    "Explicit output protection and dependency instructions"
+    "Playback-time render planning with an 85-second duration and 2550 frames at 30 fps",
+    "Portable browser and file paths with self-contained local scene serving",
+    "Process-level software or Direct3D11 renderer selection",
+    "Current export profile and an explicit path for already-normalized audio",
+    "Output protection and dependency instructions"
   ],
   "editorial_changes": [
-    "English documentation and Chinese root README",
-    "Curated production and prompt notes",
-    "Bilingual static presentation with optional English explanation subtitles",
-    "Explicit code/media licensing and references"
+    "English graphics and concise grouped explanation cards",
+    "Continuous channel drift and a coordinated dimensional reveal beginning at 10 seconds",
+    "Matte surfaces, pale top and darker front/side faces with fine edges",
+    "Staggered downward field-direction cues and removal of the electrolyte outline",
+    "Continuous later camera movement, a shorter comparison and a complete closing gate-charge row",
+    "108 BPM synthesized soundtrack with a fuller breakdown cue",
+    "Updated English documentation, optional English text track and Chinese root README"
   ],
   "selected_delivered_video": {
-    "public_filename": "edl-gating-v5.mp4",
-    "bytes": 95478277,
-    "sha256": "3667824f2ae315eea105cbb4fb64e5a8395e390e79094f49459e84b83b6aec25",
-    "is_new_render_from_prepared_checkout": false
+    "release_tag": "edl-v6",
+    "public_filename": "edl-gating-v6.mp4",
+    "duration_seconds": 85,
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "frames": 2550,
+    "bytes": 111879725,
+    "sha256": "eb1fe12674c01c9be34d684792ce9a4f1cd6f38550f77d633a14f0fd2dc3b69b",
+    "on_screen_language": "en",
+    "is_new_render_from_prepared_source": true,
+    "source_revision": "Approved English scene, HTML, timeline and score; public preparation also updates tools and documentation",
+    "audio": "Accepted synthesized music/effects master reused without a second normalization pass; no narration"
   },
-  "human_role": "Scientific framing, creative direction, review and decisions",
-  "production_assistance": "Web-based GPT coordination and Grok Bot implementation",
-  "specific_production_model": "Not established by available execution records",
-  "private_records": "Full conversations and machine logs are excluded"
+  "historical_source": {
+    "edition": "Chinese v5",
+    "production_source": "Received v5 code package with legacy v3 directory naming",
+    "archive_sha256": "ed32bf19e5b490d0bdd571bc014addb982acc7069ad67fe14c2e33e5c9dd518f",
+    "source_preparation_date": "2026-10-17",
+    "scene_html_and_timeline": "Preserved byte-for-byte during the initial v5 source preparation",
+    "selected_delivered_video": {
+      "release_tag": "edl-v5",
+      "public_filename": "edl-gating-v5.mp4",
+      "bytes": 95478277,
+      "sha256": "3667824f2ae315eea105cbb4fb64e5a8395e390e79094f49459e84b83b6aec25",
+      "is_new_render_from_prepared_checkout": false
+    }
+  },
+  "human_role": "Scientific framing, creative direction, review and selection of revisions",
+  "production_assistance": "Web-based GPT coordination and original Grok Bot implementation; Codex-assisted English revision, motion/material/sound changes, rendering and public preparation",
+  "specific_original_production_model": "Not established by available execution records",
+  "private_records": "Full conversations, machine logs and environment paths are excluded"
 }

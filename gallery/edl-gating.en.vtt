@@ -1,130 +1,51 @@
 WEBVTT
 
-NOTE English explanation-card translations. Original component labels remain in Chinese.
+NOTE Optional captions for the English showcase edition; no narration.
+The artwork is already in English. Enable captions only if useful.
 
 1
-00:00:00.600 --> 00:00:03.900 line:5% position:50% size:92% align:center
+00:00:00.100 --> 00:00:02.200
 Electric-double-layer gating
-Why can the same channel control need a lower gate voltage?
 
 2
-00:00:04.400 --> 00:00:07.486 line:5% position:50% size:92% align:center
-Gate voltage creates a field through the gate dielectric.
+00:00:02.200 --> 00:00:08.200
+One gate controls a conducting channel.
 
 3
-00:00:07.486 --> 00:00:12.124 line:5% position:50% size:92% align:center
-Holes move away; electrons enter the surface region from source and drain.
+00:00:15.400 --> 00:00:20.200
+Replace the dielectric with mobile ions.
 
 4
-00:00:12.124 --> 00:00:17.452 line:5% position:50% size:92% align:center
-Above threshold, an electron inversion layer forms a conducting channel.
+00:00:20.200 --> 00:00:30.000
+Ions separate at the interfaces; the bulk stays nearly neutral.
 
 5
-00:00:17.452 --> 00:00:22.262 line:5% position:50% size:92% align:center
-With source–drain bias: electrons move S → D; conventional current flows D → S.
+00:00:30.000 --> 00:00:39.600
+A nanometre-scale charge separation.
 
 6
-00:00:22.262 --> 00:00:26.728 line:5% position:50% size:92% align:center
-Gate voltage controls the channel; source–drain voltage drives transport.
+00:00:39.600 --> 00:00:47.000
+Nanometre separation. High gate capacitance.
 
 7
-00:00:26.728 --> 00:00:31.366 line:5% position:50% size:92% align:center
-Opposite gate and channel charges, separated by a dielectric: a capacitor.
+00:00:50.500 --> 00:01:02.000
+The same channel charge. A much lower gate voltage.
 
 8
-00:00:31.366 --> 00:00:36.176 line:5% position:50% size:92% align:center
-Q = CV. In the parallel-plate picture, C = εA/d: smaller separation, larger capacitance.
+00:01:02.000 --> 00:01:12.500
+High-field stress can build a breakdown path.
 
 9
-00:00:36.176 --> 00:00:40.297 line:5% position:50% size:92% align:center
-For the same induced charge change: ΔV = ΔQ/C.
+00:01:12.500 --> 00:01:15.000
+Lower operating voltage. Less high-voltage-related stress.
 
 10
-00:00:40.297 --> 00:00:43.728 line:5% position:50% size:92% align:center
-A larger effective gate capacitance means less voltage is needed.
+00:01:15.000 --> 00:01:20.500
+Strong interfacial fields remain.
+Intrinsic breakdown field: unchanged.
+Electrochemical stability still limits bias.
 
 11
-00:00:43.728 --> 00:00:48.366 line:5% position:50% size:92% align:center
-Replace the solid gate dielectric with an ionic liquid or ion gel.
-
-12
-00:00:48.366 --> 00:00:53.348 line:5% position:50% size:92% align:center
-Positive and negative ions can move. The unbiased electrolyte is approximately neutral.
-
-13
-00:00:53.348 --> 00:00:59.193 line:5% position:50% size:92% align:center
-Bias redistributes ions: anions approach the gate; cations approach the semiconductor.
-
-14
-00:00:59.193 --> 00:01:03.831 line:5% position:50% size:92% align:center
-Cations stay on the electrolyte side, with induced electrons on the semiconductor side.
-
-15
-00:01:03.831 --> 00:01:08.469 line:5% position:50% size:92% align:center
-The bulk is approximately neutral; voltage drops mainly across the two interfaces.
-
-16
-00:01:08.469 --> 00:01:12.437 line:5% position:50% size:92% align:center
-Zoom into the semiconductor–electrolyte interface.
-
-17
-00:01:12.437 --> 00:01:15.696 line:5% position:50% size:92% align:center
-The illustrated cation and electron layers are separated by about 1 nm.
-
-18
-00:01:15.696 --> 00:01:19.644 line:5% position:50% size:92% align:center
-Here d is an effective charge-separation distance, not the electrolyte thickness.
-
-19
-00:01:19.644 --> 00:01:23.420 line:5% position:50% size:92% align:center
-Very small charge separation can give a large capacitance per unit area.
-
-20
-00:01:23.420 --> 00:01:27.885 line:5% position:50% size:92% align:center
-The ion layer acts like an effective gate charge layer close to the channel.
-
-21
-00:01:27.885 --> 00:01:30.971 line:5% position:50% size:92% align:center
-Return to device scale and compare the two gate-control schemes.
-
-22
-00:01:30.971 --> 00:01:34.575 line:5% position:50% size:92% align:center
-Use the same target: induce the same change in channel charge, ΔQ.
-
-23
-00:01:34.575 --> 00:01:38.178 line:5% position:50% size:92% align:center
-Both channels accumulate charge together, but need different gate voltages.
-
-24
-00:01:38.178 --> 00:01:43.506 line:5% position:50% size:92% align:center
-ΔV = ΔQ/C. With a larger effective capacitance, EDL gating needs less voltage.
-
-25
-00:01:43.506 --> 00:01:48.661 line:5% position:50% size:92% align:center
-Illustrative example only: 100× capacitance would need 1/100 of the voltage change.
-
-26
-00:01:48.661 --> 00:01:53.471 line:5% position:50% size:92% align:center
-For a fixed solid dielectric thickness, E ≈ V/d: higher voltage gives a stronger field.
-
-27
-00:01:53.471 --> 00:01:57.592 line:5% position:50% size:92% align:center
-Prolonged high-field stress can lead to defects, leakage, and insulation degradation.
-
-28
-00:01:57.592 --> 00:02:00.161 line:5% position:50% size:92% align:center
-A connected defect path illustrates gate-dielectric breakdown.
-
-29
-00:02:00.161 --> 00:02:06.351 line:5% position:50% size:92% align:center
-Lower gate-voltage operation reduces reliance on high voltage and related failure risks.
-
-30
-00:02:06.351 --> 00:02:19.851 line:5% position:50% size:92% align:center
-Limits: local interface fields can remain strong; intrinsic breakdown strength is not raised.
-Electrochemical stability still matters. Source–drain high-field and heating failures remain possible.
-
-31
-00:02:20.694 --> 00:02:26.051 line:5% position:50% size:92% align:center
-Ion redistribution → EDL → larger effective gate capacitance
-→ less gate voltage for the same ΔQ → reduced reliance on high-voltage operation.
+00:01:20.655 --> 00:01:25.000
+Higher capacitance → lower gate voltage
+Less high-voltage stress for the same ΔQ.

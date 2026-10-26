@@ -13,10 +13,10 @@ Project code is MIT; original media and written material are CC BY 4.0. Dependen
 | Pillow | Image processing tools | [HPND and included notices](https://github.com/python-pillow/Pillow/blob/main/LICENSE) |
 | FFmpeg | Normalization and encoding | [Build-dependent LGPL/GPL terms](https://ffmpeg.org/legal.html) |
 | Chrome or Chromium | Browser rendering | Install separately; [Chromium licenses](https://www.chromium.org/chromium-projects/) and the chosen browser's terms apply |
-| Noto CJK | Chinese text | [SIL OFL 1.1](https://github.com/notofonts/noto-cjk/blob/main/LICENSE) |
+| Noto CJK | Original Chinese edition and retained font fallbacks | [SIL OFL 1.1](https://github.com/notofonts/noto-cjk/blob/main/LICENSE) |
 | DejaVu | Latin text and symbols | [DejaVu/Bitstream Vera notices](https://dejavu-fonts.github.io/License.html) |
 
-Browser binaries, fonts, dependency environments and third-party music samples are not distributed in this source tree. Generated film sound is provided by the included synthesis program; the production handoff identifies it as the source of the delivered soundtrack.
+Browser binaries, fonts, dependency environments and third-party music samples are not distributed in this source tree. The included synthesis program provides the current film's music and effects; the original production handoff also describes synthesized sound without outside samples.
 
 ## Production-method references
 

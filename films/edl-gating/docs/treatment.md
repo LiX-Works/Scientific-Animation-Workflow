@@ -1,23 +1,22 @@
-# Visual Treatment: One Device, Several Scales
+# Visual treatment: one device, several scales
 
-**The central idea:** begin with a familiar transistor cross-section, let it gain depth, enter the electrolyte interface, then pull back to compare two gate-control mechanisms at the same target charge change.
+**Begin with a familiar transistor cross-section, reveal its depth, enter the electrolyte interface, then return to compare two gate-control mechanisms at the same target change in channel charge.**
 
 ## Continuity carries the explanation
 
-The device is the organizing object. A camera function controls its target, yaw, pitch, visible height and field of view. The nearly flat opening becomes spatial as the device gains thickness and the field of view widens. The transformation reverses at the end.
+The device is the organizing object. A camera function controls its target, yaw, pitch, visible height and field of view. Around 10 seconds, the flat opening gains thickness and perspective in one continuous, accelerating reveal. The transformation reverses at the end.
 
-The apparent dive uses logarithmic interpolation of visible height and a handoff between macro and magnified ion representations. It preserves the charge-layer relationship while changing the view, rather than claiming atomically accurate geometry across scales.
+The camera dive uses a handoff between macro and magnified ion representations. The charge-layer relationship remains recognizable while the scale changes; the geometry is not atomically accurate across that transition.
 
-## Give each transition a reason
+Each change of view has an explanatory purpose:
 
-- The channel becomes a pair of charge layers when the explanation turns to capacitance.
 - The solid-dielectric illustration gives way to electrolyte when mobile ions become the subject.
 - The camera enters the lower interface when effective charge separation becomes the key variable.
 - The view returns to the full device for the same-charge comparison and qualified failure discussion.
 
-The electrolyte can appear thicker than the conventional dielectric while still providing strong interfacial coupling. This contrast distinguishes the full electrolyte thickness from the effective charge-separation distance.
+The electrolyte can appear thicker than the conventional dielectric while still providing strong interfacial coupling. Its full thickness is distinct from the effective charge-separation distance.
 
-## v5 color and material language
+## Color and material
 
 | Role | Color | Additional cue |
 |---|---|---|
@@ -27,14 +26,16 @@ The electrolyte can appear thicker than the conventional dielectric while still 
 | Hole | Rose `#d1495b` | Hollow ring |
 | Positive gate charge | Violet-gray `#7a6fae` | Separate legend entry |
 
-The background is pale glass blue. Dark text, bold Chinese type, translucent caption panels and anchored labels maintain contrast. Color supplements signs and locations as charge identifiers.
+The English v6 edition uses matte surfaces, a pale top and darker front/right faces to make rotation readable without strong reflections. Fine, restrained edges supplement the face contrast. Large English text and translucent caption panels maintain contrast against the pale background.
 
-The v5 review reduced plate glare through calmer metal settings. A front-third cutaway, interface grid and lower macro ion count reduce occlusion. These are legibility devices, not additional material layers.
+A front-third electrolyte cutaway, interface grid and reduced macro ion count limit occlusion. The electrolyte's rectangular outline is removed, while the interface grid remains. These are visualization aids, not additional physical layers.
+
+Electric-field direction cues are staggered and move downward along stationary paths. They indicate **field direction**, not charges crossing the gate dielectric. Channel particles move continuously from source to drain rather than first dispersing in both directions.
 
 ## Rhythm and emphasis
 
-The film has no speech narration. Text, camera motion and synthesized sound jointly set the rhythm. Reading intervals expand the 102 s story coordinate to about 146 s of screen time; a quieter interface passage lets the viewer inspect the EDL.
+The 85-second film has no speech narration. Grouped phrases, camera motion and a continuous synthesized score set the pace. Transitions retain movement while leaving space for the interface and the comparison.
 
-The failure illustration uses a branching path, cracks, a light pulse and camera emphasis. Its impact is editorial: the sequence makes a possible risk visible while the explanation retains its limitations. It is not a computed failure trajectory or an assurance that EDL devices cannot fail.
+The breakdown illustration uses a branching path, cracks, light and a fuller low-frequency sound cue. Its force is editorial: it makes a possible gate-related failure visible while the explanation retains its limits. It is not a computed failure trajectory or a promise that EDL devices cannot fail.
 
-See the [storyboard](storyboard.md), [sound notes](sound_cues.md) and [scientific scope](scientific-scope.md).
+See the [storyboard](storyboard.md), [sound design](sound_cues.md) and [scientific scope](scientific-scope.md).

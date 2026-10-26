@@ -1,10 +1,10 @@
-# Rendering the EDL gating film
+# Rendering the EDL-gating film
 
-These tools render the supplied v5 scene; they do not introduce a new animation framework. Paths passed to Node/Python tools are relative to this film folder unless absolute. You may run the scripts from another working directory. Node renderers start and close their own localhost server, so a separate server process is optional.
+The current source renders the **85-second English v6 edition**. It uses Three.js/DOM graphics, browser frame capture, procedural audio and FFmpeg. Run these commands from `films/edl-gating/`; tool input/output paths are resolved from that folder.
 
 ## Dependencies
 
-Use Node.js 20 or later, Python 3.10 or later, a recent Chrome/Chromium (Edge is also detected on Windows), and FFmpeg with the `libx264` and AAC encoders. `puppeteer-core` does not download a browser. Install the Node dependencies with the committed lock file:
+Use Node.js 20 or later, Python 3.10 or later, a recent Chrome/Chromium (Edge is also detected on Windows), and FFmpeg with `libx264` and AAC. `puppeteer-core` does not download a browser.
 
 ```sh
 npm ci --ignore-scripts
@@ -18,75 +18,76 @@ python -m pip install -r requirements.txt
 ffmpeg -version
 ```
 
-The Python requirements specify compatible ranges rather than an exact environment lock. Future library/browser versions can change numeric audio or rasterization results.
+Install **DejaVu Sans**, **DejaVu Serif** and **DejaVu Sans Mono** for the English typography. Noto Sans/Serif CJK SC remain fallbacks inherited from the Chinese edition. Fonts are not bundled; missing families can change layout. Waiting for `document.fonts.ready` does not prove a named system font is installed, so inspect stills on the target machine first.
 
-## Fonts and browser selection
+Browser detection covers common Chrome/Chromium/Edge locations. Set `CHROME_PATH` or append `--chrome "/path/to/browser"` when needed.
 
-Install **Noto Sans CJK SC**, **Noto Serif CJK SC**, **DejaVu Serif**, **DejaVu Sans**, and **DejaVu Sans Mono** before rendering if you want the font families used by the original source. Fonts are not bundled. Missing fonts fall back to system fonts, which can change caption widths and layout. Waiting for `document.fonts.ready` does not prove that a named system font is installed. Review stills on the target machine before rendering the whole film.
+## Check before rendering
 
-The tools look for common Chrome/Chromium/Edge locations. If necessary set `CHROME_PATH` to the executable, or append `--chrome "/path/to/chrome"` to a Node render/timeline command. Windows PowerShell example:
+These examples place generated output outside the Git checkout. From this film folder, `../../../edl-v6-artifacts/` is a sibling of the repository; substitute another output path if preferred.
 
-```powershell
-$env:CHROME_PATH = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+```sh
+npm run plan -- --fps 30 --workers 1 --ss 1 --out ../../../edl-v6-artifacts/frames
+npm run render -- --stills 8,14.5,40,61,70,83,84.9666666667 --workers 1 --ss 1 --q 95 --out ../../../edl-v6-artifacts/stills
 ```
 
-Rendering is headless and uses SwiftShader for a predictable software WebGL path; it does not require an interactive browser window. The browser sandbox remains enabled. In an already isolated Linux container that requires it, `--no-sandbox` is an explicit opt-in.
+The complete plan is **2,550 frames**, numbered `f00000.jpg`–`f02549.jpg`, at native **1920×1080**. `window.DUR` is 85 seconds. The 102-second story coordinate and retained 87-second internal staging clock are mapped to playback time by the scene; do not use either as the output duration.
 
-## Full pipeline
+Rendering is headless. The default `--renderer software` uses SwiftShader. On Windows, `--renderer d3d11` selects the local Direct3D11 path; `--renderer auto` leaves selection to the browser. These options affect only the launched browser process. The approved final render used D3D11 after selected-frame comparison with software rendering. Different browsers, fonts and backends can produce small image differences.
 
-Run the following in the film folder. The supplied `src/timeline.json` already exists; `--force` explicitly replaces this generated timeline after reading the live scene. The score and encoded outputs refuse overwrite by default.
+One worker is a reliable starting point. Increase concurrency only after a short check on the target machine. The browser sandbox remains enabled; `--no-sandbox` is an explicit option for an already isolated environment that requires it.
+
+## Full export
+
+The committed timeline is ready to use. Regenerate it after changing timing; `--force` explicitly replaces the existing JSON.
 
 ```sh
 npm run timeline -- --force
-python audio/score.py
-npm run plan
-npm run render -- --fps 30 --workers 4 --out frames
-python tools/encode.py --frames frames --variant medium
+python audio/score.py --out ../../../edl-v6-artifacts/audio/mix.wav
+npm run render -- --fps 30 --workers 1 --ss 1 --q 95 --out ../../../edl-v6-artifacts/frames
+python tools/encode.py --frames ../../../edl-v6-artifacts/frames --audio ../../../edl-v6-artifacts/audio/mix.wav --variant master --out ../../../edl-v6-artifacts/edl-gating-v6.mp4
 ```
 
-The output is `output/v5_medium.mp4`. Encoding includes a temporary loudness-normalized mix (-16 LUFS target, -1.5 dBTP, stereo 48 kHz) and produces H.264/AAC with fast-start MP4 metadata. It trims the procedural score's one-second tail to the rendered frame duration, without truncating the video to a shorter audio stream. Temporary normalization/pass-log files are cleaned after encoding; the source WAV and frames are preserved.
+On Windows, append `--renderer d3d11` to the render command to request the backend used for the approved export. The source does not require that backend to function.
 
-The frame renderer reads **live `window.DUR`**, after the caption reading-time warp, rather than the 102-second story length. In the supplied scene `DUR = 146.0507586206897` seconds. At 30 fps the default is **4,382 frames**, numbered 0–4,381, ending at 146.0667 seconds after frame quantization. The historical delivered MP4 has 4,383 frames (146.1 seconds); its rounded render end included an extra held-tail frame. The small tail difference is expected. This workflow covers the whole scene and does not claim byte-identical reproduction of the delivered MP4.
+The score writes an 85-second, 48 kHz stereo raw mix, a numerical report and short review stems. The encoder's current `master` profile uses **H.264 CRF 18 / medium preset / AAC 192 kb/s**, with fast-start MP4 metadata. Raw audio is loudness-normalized once, targeting **−14 LUFS / −1 dBTP**.
 
-`render.mjs` skips existing frames to resume an interrupted render. Use a fresh frame directory after changing source, fonts, frame rate, scaling or other settings. Use `--force` only when you intend to replace generated frames. A plan prints timing and frame count without writing images; `--report path.json` additionally saves the plan.
-
-## Short checks before a full render
+If an approved normalized master already exists, pass it directly and **skip another loudness pass**:
 
 ```sh
-npm run render -- --stills 10,60,120,145.9 --out output/check-stills
-npm run render -- --to 0.2 --workers 1 --out output/check-frames
-python tools/encode.py --frames output/check-frames --duration 0.2 --variant medium --out output/check.mp4
+python tools/encode.py --frames ../../../edl-v6-artifacts/frames --audio /path/to/approved-normalized.wav --audio-normalized --variant master --out ../../../edl-v6-artifacts/edl-gating-v6.mp4
 ```
 
-This produces six frames and a 0.2-second MP4. It checks rendering/encoding plumbing; it is not full-film visual or audio acceptance. The score must be generated first. To render a segment later in the film, `--from` and `--to` use **film seconds**, preserve global frame numbers, and are limited to the live film duration. Match the encoder's `--start-number` and `--duration` so that audio seeks to the same film time:
+The published MP4 reused the accepted normalized master directly. Its final AAC measured approximately −14.0 LUFS and −1.2 dBTP. The reproduction commands preserve the source and encode recipe; they do not promise byte-identical output across environments or normalization methods. Use [release.json](../release.json) to identify the exact published asset.
+
+## Resume and short excerpts
+
+The renderer skips existing frames unless `--force` is supplied. Resume only with unchanged source, fonts, backend, frame rate and scale; otherwise use a fresh directory. The encoder checks consecutive frame coverage and refuses to overwrite an MP4 by default.
+
+`--from` and `--to` use playback seconds and preserve global frame numbers. Seek the audio to the same time by matching `--start-number`:
 
 ```sh
-npm run render -- --from 60 --to 61 --out output/segment-frames
-python tools/encode.py --frames output/segment-frames --start-number 1800 --duration 1 --out output/segment.mp4
+npm run render -- --from 60 --to 61 --fps 30 --workers 1 --out ../../../edl-v6-artifacts/segment-frames
+python tools/encode.py --frames ../../../edl-v6-artifacts/segment-frames --audio /path/to/approved-normalized.wav --audio-normalized --start-number 1800 --duration 1 --out ../../../edl-v6-artifacts/segment.mp4
 ```
 
-## Quality variants
+For excerpt review, reuse a full-length normalized master instead of normalizing a short passage independently.
 
-```sh
-python tools/encode.py --variant all
-```
+## Optional variants and diagnostics
 
-| Variant | Video setting | Audio | Purpose |
-| --- | --- | --- | --- |
-| `master` | H.264 CRF 16 | AAC 256 kb/s | High-quality derivative |
-| `medium` | Two-pass budget of about 95 decimal MB | AAC 192 kb/s | Main downloadable viewing version |
-| `viewing` | Two-pass budget of about 55 decimal MB | AAC 192 kb/s | Smaller optional viewing version |
-| `preview` | Two-pass budget of about 22.5 decimal MB | AAC 128 kb/s | Lightweight draft |
+| Encoder profile | Purpose |
+|---|---|
+| `master` | Current CRF 18 / medium / AAC 192 kb/s export recipe |
+| `medium` | Approximately 95 decimal MB for the complete film |
+| `viewing` | Approximately 55 decimal MB for the complete film |
+| `preview` | Approximately 22.5 decimal MB for the complete film |
+| `legacy-master` | Retained CRF 16 / slow / AAC 256 kb/s recipe |
 
-All variants are 1920×1080. Size budgets apply to a complete film of the timeline duration, include audio, and are approximate; short clips use the corresponding bitrate. Add `--output-dir output/alternate` to choose a variant folder, or `--out path.mp4` for one variant. Add `--plan` to validate frame coverage and print FFmpeg commands without encoding. A single missing frame fails before encoding. Use `--ffmpeg` or the `FFMPEG` environment variable if it is not on PATH. `--ext png` supports lossless source frames.
+Size-budget outputs are approximate and are not the selected 111.88 MB Release film. `--plan` checks inputs and prints commands without encoding; `--output-dir` controls variant destinations. PNG frames use `--ext png`. The legacy shell wrappers remain convenience entry points; Windows can use `encode.py` directly.
 
-The POSIX `encode_v5.sh` and legacy positional `mux.sh` are convenience wrappers around the Python encoder. On Windows use `encode.py` directly. `PYTHON` may select the interpreter used by the shell wrappers.
+- `node tools/serve.mjs` opens a local scene server; it initially displays time zero, rather than playing a video.
+- `python tools/s2f.py 40,83` interpolates story positions using the exported timeline.
+- `node tools/rep.mjs --frames 2490,2490 --out ../../../edl-v6-artifacts/repeat` checks repeated captures at a closing frame.
+- `--mb 4` with `tools/mbavg.py` provides optional shutter-subframe averaging. It was not used for the selected v6 export.
 
-## Optional diagnostics and temporal sampling
-
-- `node tools/serve.mjs`: serves the scene locally for inspection; the scene initially renders time zero and is not a video player.
-- `python tools/s2f.py 40,83`: maps story seconds to film seconds from `src/timeline.json`.
-- `node tools/rep.mjs --frames 1800,1800 --out output/repeat`: takes sequential screenshots in one page to inspect repeated-frame behavior. `--raf` waits for two animation frames between render and capture.
-- `node tools/render.mjs --to 1 --mb 4 --out output/blur-frames`, followed by `python tools/mbavg.py output/blur-frames --samples 4`: captures four shutter subframes and averages in approximate linear-light space. Subframes remain available; no input images are deleted. Encode the averaged JPEG frames with matching duration. This optional path is separate from the delivered video's historical render settings.
-
-The full 4,382-frame rerender remains a separate acceptance step. Short smoke tests, a complete timing plan, score synthesis and selected late stills establish tool operation, not full-film visual equivalence or proof that a supplied historical soundtrack was generated by the current environment.
+A successful render, decode or timing plan does not replace watching the encoded result. Check text, motion and sound around transitions, then review the complete film. [Validation](../../../docs/validation.md) records the completed checks and their limits.

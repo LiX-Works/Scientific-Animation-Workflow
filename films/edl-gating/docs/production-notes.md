@@ -2,7 +2,7 @@
 
 This case began with a topic from a lecture in an undergraduate sensors course: how electric double-layer gating can reduce the voltage needed to control a transistor channel, and how that relates to certain gate-related failure risks. The course did not require an animation. The contributor took up the topic as a self-directed exercise in AI-assisted scientific animation. The aim was to communicate known physics, rather than claim a new device principle.
 
-The finished work is a collaboration between a human contributor and AI tools. The human role is visible in the scientific boundaries, the decision to restart, the visual brief and the review that shaped the film.
+The current release is the **85-second English v6 edition**, newly rendered at 1080p and 30 fps. The work combines human scientific framing and visual direction with AI-assisted implementation. Earlier Chinese versions remain part of its production history.
 
 ## The process in brief
 
@@ -35,13 +35,15 @@ Grok Bot generated a new Three.js scene, a DOM caption layer, a Python audio sco
 | Caption-reading revision | The 102 s story coordinate was stretched to roughly 176 s of viewing time | Made additional explanation readable, but increased duration |
 | v4 rendering revision | Stable drawing order/bounds and supersampling addressed temporal flicker; separate quality encodes were produced | Distinguished scene rendering problems from compression softness |
 | v5 review and revision | Cutaway and grid, new charge colors, calmer metal, channel continuity, stronger illustrative breakdown and faster middle/later passages | Produced a 146.1 s, 1080p, 30 fps film |
-| Public source preparation | Portable rendering instructions, current documentation and playback checks | Makes the case easier to inspect and reproduce without publishing private records |
+| Initial public source preparation, 2026-10-17 | Portable rendering instructions, documentation and playback checks for the Chinese v5 edition | Made the supplied production source easier to inspect without publishing private records |
+| English showcase revision, 2026-10-24–25 | English graphics; shorter grouped explanations; continuous electron drift; a coordinated 10-second dimensional reveal; matte surfaces and stronger face contrast; revised later camera movement and sound | Refocused the film for viewers who already know the basic device physics |
+| Public v6, 2026-10-25 | The approved 85-second edition rendered in full at 1080p/30 fps, with a complete closing gate-charge row | Provides the current film and matching editable source |
 
 Version labels follow the surviving records. They do not imply that every intermediate source tree or exact render environment remains available.
 
 ## Feedback that changed the film
 
-The feedback below comes from the contributor's supplied review text. The implementation descriptions are supported by the surviving v5 source and production notes; they are not measurements of learning effectiveness.
+The table below records **historical v5 revisions** from the contributor's supplied review text. These are not measurements of learning effectiveness.
 
 | Review observation or request | Recorded v5 response | Design lesson |
 |---|---|---|
@@ -53,13 +55,23 @@ The feedback below comes from the contributor's supplied review text. The implem
 | Breakdown was too weak visually | A branching path, cracks, light pulse, camera emphasis and synthesized impact were added | Stronger emphasis needs a reminder that the sequence is schematic |
 | The later film could be shorter and more energetic | Captions were tightened and later intervals accelerated; the pulse became 104 BPM | Preserve reading time selectively rather than speeding every particle equally |
 
-These decisions explain the current film. They are not universal settings for every scientific animation.
+These decisions established the original film. They are not universal settings for every scientific animation.
+
+## The English v6 review
+
+The next review concentrated on the actual moving image. An initially over-fast opening was rejected. The selected version begins its dimensional reveal around 10 seconds, accelerates continuously, and uses a pale top with darker front and right faces. Matte surfaces and fine edges preserve depth without the glare or heavy blue outlines rejected during review.
+
+Channel electrons now drift continuously from source to drain. Staggered downward cues make electric-field direction readable without implying charge flow through the dielectric. The electrolyte's unwanted rectangular outline is removed while the interface grid remains. Later camera passages, the comparison and the ending were tightened without turning the film into a sequence of separate cards.
+
+The score was revised to a continuous 108 BPM arrangement. The accepted final mix raises the musical bus by 2 dB relative to the preceding review, restores a longer low-frequency breakdown tail, and places the main breakdown cue at 70 seconds. The comparison pause was shortened by two seconds. A final narrow fix completes the purple gate-charge row across the closing flat view.
+
+Codex assisted with these source, language, audio and rendering revisions under the contributor's review. The final export contains 2,550 native 1080p frames and runs for 85.000 seconds. The [release manifest](../release.json) identifies the selected file; the [validation note](../../../docs/validation.md) separates render checks from scientific claims.
 
 ## Two clocks keep sound and text aligned
 
-The story coordinate ends at 102 s. The caption layer determines how much screen time each passage needs. The current reading estimate is `max(1.9, character_count / 5.8 + 0.5)` seconds, with additional timing rules for later scenes and the final limitations passage.
+Scene actions retain a 102-second story coordinate, but this is not the playback duration. The current exported timeline maps those actions into **85 seconds**. The renderer uses the live playback interface, and the score uses the exported timeline. The internal 87-second staging clock and its final two-second editorial adjustment are handled by that interface.
 
-The exported story-to-film mapping also drives the audio score, so changing a caption can affect camera timing and sound-event placement. The current mapping ends at approximately 146.0508 s. The supplied film was rendered to 146.1 s, producing 4,383 frames at 30 fps; an automatic render of the exact authored duration can differ by a frame. Treating 102 as the final film duration would cut off the last 44 seconds.
+In the historical v5 edition, a reading-time estimate expanded the same story coordinate to approximately 146.0508 seconds, and the delivered encode ran for 146.1 seconds. That reading-time rule does not describe the current English edit. When revising the source, regenerate its timeline and audio rather than using the length of an earlier edition.
 
 See the [storyboard](storyboard.md), [sound notes](sound_cues.md) and [rendering instructions](rendering.md) for the relevant interfaces.
 

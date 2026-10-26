@@ -1,9 +1,10 @@
-// 《离子电双层栅控降低晶体管击穿风险的物理原理》 — 画面 = render(t) 纯函数
+// Electric-double-layer gating and reduced voltage stress: a deterministic render(t) scene.
 import * as THREE from 'three';
 const W = 1920, H = 1080;
 const STORY = 102; let DUR = 102;
+const REVIEW = new URLSearchParams(location.search).has('review');
 
-// ---------- 工具 ----------
+// ---------- Utilities ----------
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const seg = (t, a, b) => clamp((t - a) / (b - a));
 const sm = x => x * x * (3 - 2 * x);
@@ -16,7 +17,7 @@ function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Ma
 const R = mulberry(20261016);
 const jit = (i, t, f = 1) => Math.sin(t * 1.7 * f + i * 12.9898) * .5 + Math.sin(t * 2.9 * f + i * 78.233) * .5;
 
-// ---------- 渲染器 ----------
+// ---------- Renderer ----------
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, logarithmicDepthBuffer: true, alpha: true });
 renderer.setClearColor(0x000000, 0);
 renderer.setPixelRatio(+(new URLSearchParams(location.search).get('ss') || 1)); renderer.setSize(W, H);
@@ -32,16 +33,24 @@ const rim = new THREE.DirectionalLight('#cfe3ff', .8); rim.position.set(-8, 3, -
 const fill = new THREE.DirectionalLight('#ffffff', .5); scene.add(fill);
 
 const C = {
-  sub: '#c4cfdb', nplus: '#9fbbdc', ox: '#ffffff', gel: '#a9d8d0', gate: '#8c9aab',
+  sub: '#c4cfdb', nplus: '#9fbbdc', ox: '#d5d7d3', gel: '#a9d8d0', gate: '#8c9aab',
   e: '#2456c8', h: '#d1495b', cat: '#c98a2b', an: '#3f8a62', gq: '#7a6fae', edge: '#33465c', lat: '#9aa8ba'
 };
 
-// ---------- 器件（可动态改变尺寸的盒子） ----------
+// ---------- Device parts (dynamically sized boxes) ----------
 const unitBox = new THREE.BoxGeometry(1, 1, 1);
 const unitEdges = new THREE.EdgesGeometry(unitBox);
 function part(color, o = {}) {
-  const m = new THREE.MeshStandardMaterial({ color, roughness: o.rough ?? .55, metalness: o.metal ?? 0, transparent: !!o.transparent, opacity: o.opacity ?? 1, emissive: new THREE.Color(color), emissiveIntensity: 0, depthWrite: !o.transparent });
-  const mesh = new THREE.Mesh(unitBox, m);
+  const geo = o.faces ? unitBox.clone() : unitBox;
+  if (o.faces) {
+    const front = new THREE.Color(o.faces.front ?? color), top = new THREE.Color(o.faces.top), side = new THREE.Color(o.faces.side);
+    const faceColors = [side, side, top, side, front, side], rgb = new Float32Array(geo.attributes.position.count * 3);
+    faceColors.forEach((c, f) => { for (let v = 0; v < 4; v++) rgb.set([c.r, c.g, c.b], (f * 4 + v) * 3); });
+    geo.setAttribute('color', new THREE.BufferAttribute(rgb, 3));
+  }
+  const Material = o.specular === undefined ? THREE.MeshStandardMaterial : THREE.MeshPhysicalMaterial;
+  const m = new Material({ color: o.faces ? '#ffffff' : color, vertexColors: !!o.faces, roughness: o.rough ?? .55, metalness: o.metal ?? 0, ...(o.specular === undefined ? {} : { specularIntensity: o.specular, clearcoat: 0 }), transparent: !!o.transparent, opacity: o.opacity ?? 1, emissive: new THREE.Color(color), emissiveIntensity: 0, depthWrite: !o.transparent });
+  const mesh = new THREE.Mesh(geo, m);
   const lm = new THREE.LineBasicMaterial({ color: C.edge, transparent: true, opacity: 1 });
   const lines = new THREE.LineSegments(unitEdges, lm);
   const g = new THREE.Group(); g.add(mesh); g.add(lines);
@@ -61,57 +70,69 @@ function inst(geo, color, n, o = {}) {
 const M4 = new THREE.Matrix4(), Q0 = new THREE.Quaternion(), V3 = new THREE.Vector3(), S3 = new THREE.Vector3();
 function put(im, i, x, y, z, s) { V3.set(x, y, z); S3.set(s, s, s); M4.compose(V3, Q0, S3); im.setMatrixAt(i, M4); }
 
-const GX = 4.6; // 栅宽一半
+const GX = 4.6; // Half the gate width.
 function makeDevice(kind) {
   const d = { kind, g: new THREE.Group() };
-  d.sub = part(C.sub); d.S = part(C.nplus); d.D = part(C.nplus);
-  d.diel = part(C.ox, { transparent: true, opacity: .42, rough: .2 });
+  d.sub = part(C.sub, { faces: { top: '#d5dfe8', front: '#98a3ae', side: '#65717f' } });
+  d.S = part(C.nplus, { faces: { top: '#b7cde3', front: '#8196a8', side: '#576e82' } }); d.D = part(C.nplus, { faces: { top: '#b7cde3', front: '#8196a8', side: '#576e82' } });
+  d.diel = part(C.ox, { transparent: true, opacity: .48, rough: .6 });
   d.gel = part(C.gel, { transparent: true, opacity: .0, rough: .1 });
-  d.gate = part(C.gate, { metal: .25, rough: .68 });
-  d.cS = part('#a9b4c1', { metal: .25, rough: .62 }); d.cD = part('#a9b4c1', { metal: .25, rough: .62 });
+  d.gate = part(C.gate, { metal: .08, rough: .76, specular: .25, faces: { top: '#b8c6d3', front: '#5e6d7c', side: '#3b4a59' } });
+  d.cS = part('#a9b4c1', { metal: .08, rough: .72, specular: .25, faces: { top: '#ccd6df', front: '#7e8d9b', side: '#566878' } }); d.cD = part('#a9b4c1', { metal: .08, rough: .72, specular: .25, faces: { top: '#ccd6df', front: '#7e8d9b', side: '#566878' } });
   [d.sub, d.S, d.D, d.diel, d.gel, d.gate, d.cS, d.cD].forEach(p => d.g.add(p));
-  // 载流子
+  // Charge carriers.
   d.NE = 150; d.el = inst(sphereG, C.e, d.NE, { em: .15 }); d.g.add(d.el);
   d.eo = []; for (let i = 0; i < d.NE; i++) { const side = i % 2 ? 1 : -1; d.eo.push({ ox: side * (5 + R() * 2.8), oy: -.25 - R() * 1.05, tx: -4.4 + R() * 8.8, ty: -.07 - R() * .17, z: R() - .5, r: R(), sp: .92 + R() * .16, u: (i + R() * .8) / d.NE }); }
+  // One stratified phase lattice spans both contacts before drift starts.
+  // Preserve the original RNG draws above so the rest of the scene remains deterministic.
+  d.eo.forEach((p, i) => {
+    p.u = (i + .5) / d.NE; p.tx = -7.5 + 15 * p.u;
+    p.ox = (p.tx < 0 ? -1 : 1) * Math.abs(p.ox);
+    p.z = ((i % 3) + .5) / 3 - .5; p.sp = 1;
+  });
   d.NR = 70; d.res = inst(sphereG, C.e, d.NR, { em: .15 }); d.g.add(d.res);
   d.ro = []; for (let i = 0; i < d.NR; i++) { const side = i % 2 ? 1 : -1; d.ro.push({ x: side * (4.8 + R() * 3.1), y: -.15 - R() * 1.15, z: R() - .5 }); }
   d.NH = 170; d.ho = inst(torusG, C.h, d.NH, { em: .15 }); d.g.add(d.ho);
   d.hp = []; for (let i = 0; i < d.NH; i++) { let x = -7.7 + R() * 15.4; d.hp.push({ x, y: -1.75 - R() * 3.1, z: R() - .5 }); }
-  for (let i = 0; i < 60; i++) d.hp[i].y = -.3 - R() * 1.6, d.hp[i].x = -4.3 + R() * 8.6; // 表面附近的空穴
+  for (let i = 0; i < 60; i++) d.hp[i].y = -.3 - R() * 1.6, d.hp[i].x = -4.3 + R() * 8.6; // Holes near the surface.
   d.NG = 72; d.gq = inst(sphereLo, C.gq, d.NG, { em: .1, rough: .45 }); d.g.add(d.gq);
-  // 场线（介质内竖直短线）
-  d.NF = 26 * 5; const fp = new Float32Array(d.NF * 6); const fg = new THREE.BufferGeometry(); fg.setAttribute('position', new THREE.BufferAttribute(fp, 3));
-  d.fieldM = new THREE.LineBasicMaterial({ color: '#33475e', transparent: true, opacity: 0 }); d.field = new THREE.LineSegments(fg, d.fieldM); d.field.frustumCulled = false; d.g.add(d.field);
-  // 电压柱
+  // Stationary field paths plus staggered downward direction cues; these are not moving charges.
+  d.NF = 26 * 5;
+  const fp = new Float32Array(d.NF * 24), fc = new Float32Array(d.NF * 32);
+  const fg = new THREE.BufferGeometry();
+  fg.setAttribute('position', new THREE.BufferAttribute(fp, 3));
+  fg.setAttribute('color', new THREE.BufferAttribute(fc, 4));
+  d.fieldM = new THREE.LineBasicMaterial({ color: '#46515c', transparent: true, opacity: 0, vertexColors: true }); d.field = new THREE.LineSegments(fg, d.fieldM); d.field.frustumCulled = false; d.g.add(d.field);
+  // Voltage column.
   d.col = new THREE.Mesh(new THREE.CylinderGeometry(.32, .32, 1, 32), new THREE.MeshStandardMaterial({ color: '#e8590c', emissive: new THREE.Color('#e8590c'), emissiveIntensity: .25, roughness: .3, transparent: true, opacity: .9 }));
   d.colGlass = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, 1, 32, 1, true), new THREE.MeshStandardMaterial({ color: '#ffffff', transparent: true, opacity: .35, roughness: .05, side: THREE.DoubleSide, depthWrite: false }));
   d.g.add(d.col, d.colGlass);
   scene.add(d.g);
   return d;
 }
-const B = makeDevice('edl');   // 主角：开场的晶体管，之后它的介质变为电解质
-const A = makeDevice('ox');    // 对照：传统固体栅介质（后段滑入）
+const B = makeDevice('edl');   // Main device; its dielectric becomes an electrolyte after the opening.
+const A = makeDevice('ox');    // Conventional solid-dielectric reference, introduced later.
 
-// 电解质离子（介观）
+// Electrolyte ions at the mesoscopic scale.
 const NI = 230;
 const cat = inst(sphereG, C.cat, NI, { em: .12 }), an = inst(sphereG, C.an, NI, { em: .12 });
 B.g.add(cat, an);
 const ions = [];
 for (let i = 0; i < NI; i++) ions.push({ cx: -4.4 + R() * 8.8, cy: .12 + R() * 2.16, cz: R() - .5, ax: -4.4 + R() * 8.8, ay: .12 + R() * 2.16, az: R() - .5, r: R() });
-// 被吸附进界面层的“过剩”离子：前 26% 的阳离子 → 底部，前 26% 的阴离子 → 顶部
+// Interfacial excess ions: the first 26% of cations move down; the first 26% of anions move up.
 const EXC = Math.floor(NI * .26);
 function layerSlot(i, n) { const cols = 26; const rows = Math.ceil(n / cols); const c = i % cols, r = Math.floor(i / cols); return { x: -4.3 + (c + .5) / cols * 8.6 + (r % 2) * .15, z: (r + .5) / rows - .5 }; }
 
-// 界面坐标底面网格（电解质/半导体界面）
+// Coordinate grid at the electrolyte/semiconductor interface.
 const gridG = new THREE.BufferGeometry(); { const a = []; for (let x = -8; x <= 8.001; x += .8) a.push(x, 0, -1, x, 0, 1); for (let k = 0; k <= 10; k++) { const z = -1 + k * .2; a.push(-8, 0, z, 8, 0, z); } gridG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(a), 3)); }
 const gridM = new THREE.LineBasicMaterial({ color: '#2c4560', transparent: true, opacity: 0, depthWrite: false }); const grid = new THREE.LineSegments(gridG, gridM); grid.frustumCulled = false; grid.renderOrder = 2; B.g.add(grid);
-// φ(y) 曲线
+// Potential profile phi(y).
 const phiN = 120; const phiG = new THREE.BufferGeometry(); phiG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(phiN * 3), 3));
 const phiM = new THREE.LineBasicMaterial({ color: '#14202e', transparent: true, opacity: 0 }); const phiL = new THREE.Line(phiG, phiM); phiL.frustumCulled = false; B.g.add(phiL);
 const axG = new THREE.BufferGeometry(); axG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(12), 3)); const axM = new THREE.LineBasicMaterial({ color: '#6b7c90', transparent: true, opacity: 0 }); const axL = new THREE.LineSegments(axG, axM); axL.frustumCulled = false; B.g.add(axL);
 
-// ---------- 微观界面（单位：nm，整体缩放） ----------
-const NM = .02; // 1 nm 在世界中的长度
+// ---------- Microscopic interface (nanometers, scaled as a group) ----------
+const NM = .02; // World-space length representing 1 nm.
 const micro = new THREE.Group(); micro.scale.setScalar(NM); B.g.add(micro);
 const latPts = []; for (let x = -18; x <= 18; x += .72) for (let z = -14; z <= 10; z += .72) for (let y = -.45; y > -6.5; y -= .72) latPts.push([x + (Math.round(y / .72) % 2) * .36, y, z]);
 const lat = inst(sphereLo, C.lat, latPts.length, { em: .05, rough: .6, metal: .1 }); micro.add(lat);
@@ -120,7 +141,7 @@ const NCL = 36 * 24; const mcat = inst(sphereG, C.cat, NCL, { em: .12 }); const 
 const clp = []; for (let r = 0; r < 24; r++) for (let c = 0; c < 36; c++) clp.push({ x: -17.5 + c * 1.0 + (r % 2) * .5 + (R() - .5) * .25, z: -13.5 + r * 1.0 + (R() - .5) * .25, y0: 2 + R() * 9, r: R() });
 const NME = 820; const mel = inst(sphereLo, C.e, NME, { em: .3, opacity: .6, dw: false }); micro.add(mel);
 const mep = []; for (let i = 0; i < NME; i++) mep.push({ x: -18 + R() * 36, z: -14 + R() * 24, y: -.35 - Math.pow(R(), 1.8) * 1.4 });
-// 近景离子上的 +/− 标记
+// Charge signs on close-up ions.
 function signTex(ch, col) { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); g.fillStyle = col || '#ffffff'; g.font = 'bold 110px DejaVu Sans'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch, 64, 70); return new THREE.CanvasTexture(c); }
 const plusM = new THREE.SpriteMaterial({ map: signTex('+', '#4a3000'), transparent: true, depthTest: false }), minusM = new THREE.SpriteMaterial({ map: signTex('−'), transparent: true, depthTest: false });
 const signC = [], signA = [];
@@ -130,21 +151,21 @@ const mbp = []; for (let i = 0; i < NMB; i++) mbp.push({ x: -18 + R() * 36, y: 3
 const NMF = 400; const mfG = new THREE.BufferGeometry(); mfG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NMF * 6), 3));
 const mfM = new THREE.LineBasicMaterial({ color: '#33475e', transparent: true, opacity: 0 }); const mfL = new THREE.LineSegments(mfG, mfM); mfL.frustumCulled = false; micro.add(mfL);
 const mfp = []; for (let i = 0; i < NMF; i++) mfp.push({ x: -10 + R() * 20, z: -7 + R() * 14, ph: R() });
-// 微观里的半导体表面（细线框平面）
+// Semiconductor surface in the microscopic view.
 const surfM = new THREE.MeshStandardMaterial({ color: '#c8d3e0', roughness: .8, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false });
 const surf = new THREE.Mesh(new THREE.PlaneGeometry(30, 20), surfM); surf.rotation.x = -Math.PI / 2; surf.position.y = -.1; micro.add(surf);
-// d 括号
+// Separation bracket for d.
 const brG = new THREE.BufferGeometry(); brG.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, .45, 0, 0, -.55, 0, -.25, .45, 0, .25, .45, 0, -.25, -.55, 0, .25, -.55, 0]), 3));
 const brM = new THREE.LineBasicMaterial({ color: '#14202e', transparent: true, opacity: 0, depthTest: false }); const br = new THREE.LineSegments(brG, brM); br.position.set(-1.6, 0, 6); br.renderOrder = 9; micro.add(br);
 
-// 击穿：缺陷 + 细丝（A 的介质内）
+// Breakdown: defects and a filament inside the reference dielectric.
 const ND = 90; const defs = inst(new THREE.OctahedronGeometry(1), '#e8590c', ND, { em: .4 }); A.g.add(defs);
 const dp = []; const fx = .9;
 for (let i = 0; i < ND; i++) { const chain = i < 14; dp.push(chain ? { x: fx + Math.sin(i * 2.1) * .12, y: .05 + (i / 13) * .6, z: .05, t: 80.5 + (i / 14) * 4.2 + R() * .4, chain } : { x: -4.2 + R() * 8.4, y: .05 + R() * .6, z: (R() - .5) * 5.4, t: 79.8 + R() * 5, chain }); }
 const filG = new THREE.BufferGeometry(); { const a = []; for (let i = 0; i <= 14; i++) a.push(fx + Math.sin(i * 2.1) * .12, .7 - i / 14 * .7, .05); filG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(a), 3)); }
 const filM = new THREE.LineBasicMaterial({ color: '#c92a2a', transparent: true, opacity: 0 }); const fil = new THREE.Line(filG, filM); A.g.add(fil);
 const flash = new THREE.PointLight('#ffb35a', 0, 9); flash.position.set(fx, .35, .6); A.g.add(flash);
-// 击穿通路：从栅极向下逐段生长的放电通道 + 侧向裂纹 + 残留烧蚀
+// Breakdown path: a discharge growing downward from the gate, side cracks, and residual damage.
 const bPts = []; { const rr = mulberry(4242); for (let i = 0; i <= 7; i++) bPts.push(new THREE.Vector3(fx + (i && i < 7 ? (i % 2 ? 1 : -1) * (.05 + rr() * .07) : 0), .7 - (i + (i && i < 7 ? (rr() - .5) * .4 : 0)) / 7 * .7, .05 + (i && i < 7 ? (rr() - .5) * .04 : 0))); }
 const bCurve = new THREE.CurvePath(); for (let i = 0; i < bPts.length - 1; i++) bCurve.add(new THREE.LineCurve3(bPts[i], bPts[i + 1]));
 const coreG = new THREE.TubeGeometry(bCurve, 132, .024, 6, false), haloG = new THREE.TubeGeometry(bCurve, 132, .07, 8, false);
@@ -154,12 +175,12 @@ const crG = new THREE.BufferGeometry(); { const a = []; const rr = mulberry(77);
 const crM = new THREE.LineBasicMaterial({ color: '#7a2a12', transparent: true, opacity: 0, depthTest: false }); const cracks = new THREE.LineSegments(crG, crM); cracks.renderOrder = 6; cracks.frustumCulled = false; A.g.add(cracks);
 const flashDiv = document.createElement('div'); flashDiv.style.cssText = 'position:absolute;left:0;top:0;width:1920px;height:1080px;background:radial-gradient(55% 55% at var(--fx,50%) var(--fy,40%),rgba(255,150,60,.75),rgba(255,120,40,.25) 40%,rgba(255,255,255,0) 75%);pointer-events:none;opacity:0;z-index:5'; document.body.appendChild(flashDiv);
 
-// ---------- 文字系统 ----------
+// ---------- Text overlays ----------
 const ov = document.getElementById('ov');
 const TX = [];
 function tx(t0, t1, html, o = {}) {
   const el = document.createElement('div'); el.className = 'tx ' + (o.cls || 'l');
-  if (o.split !== false && !/[<]/.test(html)) { el.innerHTML = [...html].map(ch => `<span class="c">${ch === ' ' ? '&nbsp;' : ch}</span>`).join(''); }
+  if (o.split === true && !/[<]/.test(html)) { el.innerHTML = [...html].map(ch => `<span class="c">${ch === ' ' ? '&nbsp;' : ch}</span>`).join(''); }
   else el.innerHTML = html;
   ov.appendChild(el); const s = { t0, t1, el, o, chars: [...el.querySelectorAll('span.c')] }; TX.push(s); return s;
 }
@@ -172,7 +193,8 @@ function drawText(t) {
     el.style.display = 'block';
     let x = o.x ?? 960, y = o.y ?? 540;
     if (o.at) { const a = typeof o.at === 'function' ? o.at(t) : o.at; const sc = toScreen(a, o.obj); x = sc[0] + (o.dx || 0); y = sc[1] + (o.dy ?? (o.lead ? -80 : 0)); }
-    const inn = seg(t, t0, t0 + (o.inDur || .55)), out = seg(t, t1 - (o.outDur || .35), t1);
+    const ft = filmAt(t), f0 = filmAt(t0), f1 = filmAt(t1);
+    const inn = seg(ft, f0, f0 + (o.inDur ?? .32)), out = seg(ft, f1 - (o.outDur ?? .24), f1);
     const ax = o.anchor ?? .5;
     { const w = el.offsetWidth || 0; x = clamp(x, 40 + ax * w, W - 40 - (1 - ax) * w); }
     el.style.transform = `translate(${x}px,${y}px) translate(${-ax * 100}%,-50%) translateY(${-out * 14}px) scale(${o.scale ? o.scale(t) : 1})`;
@@ -185,157 +207,176 @@ function drawText(t) {
 }
 const vv = (x, y, z = 0) => new THREE.Vector3(x, y, z);
 
-// 片头
-tx(.6, 3.9, '离子电双层栅控', { cls: 'h', y: 150, stag: .06 });
-tx(1.3, 3.9, '为什么能用更低的栅压完成同样的沟道调控', { cls: 'sub', y: 236, stag: .015 });
-// ---- 解释字幕（底部说明卡，按“因为 / 所以 / →”组织因果链） ----
+// A compact opening and grouped explanation cards; full phrases enter together.
+tx(.2, 17.2, 'Electric-double-layer gating', { cls: 'h', y: 105, split: false });
+tx(.4, 17.2, 'The same channel control. A lower gate voltage.', { cls: 'sub', y: 190, split: false });
 const CAPS = [];
-function cap(s0, s1, html) { CAPS.push([s0, s1, html]); return tx(s0, s1, html, { cls: 'cap', x: 110, y: 968, anchor: 0, stag: .012, split: !/</.test(html) }); }
-cap(4.4, 7.0, '栅压 V<sub>G</sub> 在栅介质中建立纵向电场');
-cap(7.0, 10.0, '电场排斥表面空穴、吸引电子；电子由源漏区汇入表面');
-cap(10.0, 12.0, '电子足够多（V<sub>G</sub> &gt; V<sub>th</sub>）→ 形成反型层，即导电沟道');
-cap(12.0, 14.6, '加 V<sub>DS</sub>：电子沿沟道 S → D 运动，电流 I<sub>DS</sub> 为 D → S');
-cap(14.6, 17.2, '栅压建立沟道（纵向），源漏电压驱动输运（横向）');
-cap(17.2, 19.4, '栅极 +Q 与沟道 −Q 隔介质相对：栅控结构即一个电容');
-cap(19.4, 22.4, 'Q = CV，C = εA / d：电荷分离距离 d 越小，C 越大');
-cap(22.4, 25.4, '诱导同样的 ΔQ，所需栅压变化 ΔV = ΔQ / C');
-cap(25.4, 28.4, '所以：有效栅电容越大，所需栅压越低');
-cap(28.4, 31.4, '将固体栅介质换成离子电解质（离子液体、离子凝胶）');
-cap(31.4, 34.6, '电解质中正负离子可移动；无偏压时均匀混合、整体电中性');
-cap(34.6, 37.6, '加栅压后离子受电场力迁移：阴离子移向栅极，阳离子移向半导体表面');
-cap(37.6, 40.6, '阳离子停在电解质一侧，在半导体一侧感应出等量电子');
-cap(40.6, 44.0, '体相近似电中性，电势降集中在两个界面：两个电双层');
-cap(44.0, 50.4, '放大到半导体–电解质界面');
-cap(50.4, 53.0, '阳离子层与感应电子仅相隔约 1 nm');
-cap(53.0, 55.4, '此处 d 为等效电荷分离距离，而非电解质厚度');
-cap(55.4, 57.6, 'C = εA / d：d 极小 → 单位面积电容极大');
-cap(57.6, 60.4, '离子层如同紧贴沟道的等效栅极，栅控效率因此很高');
-cap(60.4, 64.0, '回到器件尺度，比较两种栅控方式');
-cap(64.0, 67.0, '设定相同目标：在沟道中诱导相同的 ΔQ');
-cap(67.0, 70.6, '两条沟道电子同步增加，所需栅压却不同');
-cap(70.6, 74.0, 'ΔV = ΔQ / C，而 C<sub>EDL</sub> ≫ C<sub>ox</sub> → 电双层只需很低的 V<sub>G</sub>');
-cap(74.0, 78.0, '例：电容大 100 倍，所需 ΔV 约为 1/100（仅作示意）');
-cap(78.0, 81.0, '固体介质中 E ≈ V / d：厚度一定时，栅压越高电场越强');
-cap(81.0, 85.0, '长期高场应力 → 缺陷累积 → 漏电增加、绝缘退化');
-cap(85.0, 87.4, '缺陷连成通路 → 栅介质击穿');
-cap(87.4, 89.8, '电双层以更低 V<sub>G</sub> 完成同样调控 → 减少对高栅压的依赖 → 降低相关击穿风险');
-// 部件标签（锚定在器件上，带底板）
-tx(1.6, 8.5, '栅极 G', { at: vv(0, 1.15), obj: B.g, cls: 'l' });
-tx(1.9, 8.5, '栅介质', { at: vv(-6.4, .35), obj: B.g, cls: 's' });
-tx(2.2, 8.5, '源 S（n⁺）', { at: vv(-6.4, -.75), obj: B.g, cls: 's' });
-tx(2.4, 8.5, '漏 D（n⁺）', { at: vv(6.4, -.75), obj: B.g, cls: 's' });
-tx(2.7, 8.5, 'p 型衬底', { at: vv(0, -3.6), obj: B.g, cls: 's' });
-const vgT = tx(4.4, 17, '', { at: vv(GX + .4, 1.15), obj: B.g, cls: 'k', anchor: 0, split: false, update: (t, el) => { const v = vgPhase1(t); el.innerHTML = `V<sub>G</sub> ↑ ${(v * 1.0).toFixed(2)}`; } });
-tx(5.6, 9.6, '空穴被排斥', { at: vv(-2.6, -2.3), obj: B.g, cls: 's warm' });
-tx(7.0, 10.0, '电子汇向表面', { at: vv(2.6, -1.25), obj: B.g, cls: 's cool' });
-tx(8.4, 11.6, '电子不穿过栅介质', { at: vv(0, .35), obj: B.g, cls: 's' });
-tx(10.2, 12.2, '反型层（导电沟道）', { at: vv(-1.5, -.55), obj: B.g, cls: 's cool', dy: 30 });
-tx(12.0, 16.8, '电子 S → D', { at: vv(0, -.55), obj: B.g, cls: 's cool', dy: 34 });
-tx(12.6, 16.8, '电流 I<sub>DS</sub>：D → S', { at: vv(0, -.55), obj: B.g, cls: 's', split: false, dy: 92 });
-tx(14.6, 17.2, '纵向 · 栅控', { x: 120, y: 150, cls: 'l warm', anchor: 0 });
-tx(15.0, 17.2, '横向 · 输运', { x: 120, y: 222, cls: 'l cool', anchor: 0 });
-// 电容视角
-tx(17.2, 22.4, '+Q', { at: vv(GX + .55, .62), obj: B.g, cls: 'l warm', anchor: 0 });
-tx(17.4, 22.4, '−Q', { at: vv(GX + .55, -.14), obj: B.g, cls: 'l cool', anchor: 0 });
-tx(18.2, 22.4, 'd', { at: vv(-GX - .5, .35), obj: B.g, cls: 'f', anchor: 1 });
-tx(17.8, 22.4, 'Q = C V', { cls: 'f', x: 1800, y: 150, anchor: 1 });
-tx(19.4, 22.4, 'C = εA / d', { cls: 'f', x: 1800, y: 234, anchor: 1 });
-tx(22.6, 28.6, '<span id="dv">ΔV</span> = ΔQ / <span id="cc" style="display:inline-block">C</span>', { cls: 'f', x: 1800, y: 170, anchor: 1, split: false, update: (t, el) => { const k = ss(t, 24, 26.5); el.querySelector('#cc').style.transform = `scale(${1 + k * .9})`; el.querySelector('#dv').style.display = 'inline-block'; el.querySelector('#dv').style.transform = `scale(${1 - k * .5})`; } });
-// 电解质
-tx(37.0, 44.0, '阴离子 → 栅极界面', { at: vv(-2.6, 2.05), obj: B.g, cls: 'l an', lead: 1 });
-tx(37.6, 44.0, '阳离子 → 半导体表面（电解质一侧）', { at: vv(-1.6, .2), obj: B.g, cls: 'l cat', lead: 1 });
-tx(39.0, 44.0, '感应电子（半导体一侧）', { at: vv(1.6, -.2), obj: B.g, cls: 's cool', lead: 1 });
-tx(40.4, 44.0, '体相近似电中性', { at: vv(1.8, 1.22), obj: B.g, cls: 's' });
+function cap(s0, s1, html) { CAPS.push([s0, s1, html]); return tx(s0, s1, html, { cls: 'cap', x: 110, y: 968, anchor: 0, split: false }); }
+cap(4.4, 17.2, 'One gate controls a conducting channel.');
+cap(26.729032258064516, 31.90943396226415, 'Replace the dielectric with mobile ions.');
+cap(31.90943396226415, 44.0, 'Ions separate at the interfaces; the bulk stays nearly neutral.');
+cap(44.0, 53.0, 'A nanometre-scale charge separation.');
+cap(53.0, 60.4, 'Nanometre separation. High gate capacitance.');
+cap(64.0, 78.0, 'The same channel charge. A much lower gate voltage.');
+cap(78.0, 87.4, 'High-field stress can build a breakdown path.');
+cap(87.4, 89.8, 'Lower operating voltage. Less high-voltage-related stress.');
+// Component labels anchored to the device, with background plates.
+tx(1.6, 22.2, 'Gate G', { at: vv(0, 1.15), obj: B.g, cls: 'l' });
+tx(1.6, 22.2, 'Gate dielectric', { at: vv(-6.4, .35), obj: B.g, cls: 's' });
+tx(1.6, 22.2, 'Source S (n⁺)', { at: vv(-6.4, -.75), obj: B.g, cls: 's' });
+tx(1.6, 22.2, 'Drain D (n⁺)', { at: vv(6.4, -.75), obj: B.g, cls: 's' });
+tx(1.6, 22.2, 'p-type substrate', { at: vv(0, -3.6), obj: B.g, cls: 's' });
+// Let the formed channel flow steadily before the dimensional reveal.
+tx(10.4, 22.2, 'Electrons S → D', { at: vv(0, -.55), obj: B.g, cls: 's cool', dy: 84 });
+tx(10.4, 22.2, 'Current I<sub>DS</sub>: D → S', { at: vv(0, -.55), obj: B.g, cls: 's', split: false, dy: 138 });
+// Early capacitor formula animations are omitted; the later interface/comparison retains them.
+// Electrolyte.
+tx(37.0, 44.0, 'Anions → gate interface', { at: vv(-2.6, 2.05), obj: B.g, cls: 'l an', lead: 1 });
+tx(37.6, 44.0, 'Cations → surface<br><span class="detail">electrolyte side</span>', { at: vv(-1.6, .2), obj: B.g, cls: 'l cat', dx: -150, dy: -150, lead: 1 });
+tx(39.0, 44.0, 'Induced electrons<br><span class="detail">semiconductor side</span>', { at: vv(1.6, -.2), obj: B.g, cls: 's cool', dx: 130, dy: 20, lead: 1 });
 tx(41.2, 44.6, 'φ(y)', { at: vv(6.5, 2.75), obj: B.g, cls: 's' });
-tx(41.6, 44.6, '电势降集中在两个界面', { at: vv(6.2, -.35), obj: B.g, cls: 's' });
-// 比例尺
+tx(41.6, 44.6, 'Voltage drops<br>at two interfaces', { at: vv(6.2, -.35), obj: B.g, cls: 's' });
+// Scale indicator.
 const scaleT = tx(44.2, 60.4, '', { x: 1700, y: 860, cls: 'k', split: false, update: (t, el) => { const h = camH; const nm = h / NM; const bar = nm / 6; const lab = bar >= 1000 ? (bar / 1000).toPrecision(2) + ' μm' : bar.toPrecision(2) + ' nm'; el.innerHTML = `<div style="width:${H / 6}px;height:3px;background:#24364a;margin-bottom:8px"></div>${lab}`; } });
-tx(50.4, 60.0, '电双层', { cls: 'm', x: 120, y: 150, anchor: 0 });
-tx(51.6, 60.0, '阳离子层（电解质一侧）', { at: vv(4, .45, 6), obj: micro, cls: 'l cat', anchor: 0, dx: 60, lead: 1 });
-tx(52.2, 60.0, '感应电子（半导体一侧）', { at: vv(4, -.8, 6), obj: micro, cls: 'l cool', anchor: 0, dx: 60, lead: 1 });
+tx(50.4, 60.0, 'Electric double layer', { cls: 'm', x: 120, y: 150, anchor: 0 });
+tx(51.6, 60.0, 'Cation layer<br><span class="detail">electrolyte side</span>', { at: vv(4, .45, 6), obj: micro, cls: 'l cat', anchor: 0, dx: 60, dy: -130, lead: 1 });
+tx(52.2, 60.0, 'Induced electrons<br><span class="detail">semiconductor side</span>', { at: vv(4, -.8, 6), obj: micro, cls: 'l cool', anchor: 0, dx: 60, dy: 30, lead: 1 });
 tx(53.0, 60.0, 'd ≈ 1 nm', { at: vv(-1.6, -.05, 6), obj: micro, cls: 'f', anchor: 1, dx: -28 });
 tx(55.0, 60.0, 'C = εA / <span id="dd" style="display:inline-block">d</span>', { cls: 'f', x: 120, y: 240, anchor: 0, split: false, update: (t, el) => { const k = ss(t, 55.6, 57); el.querySelector('#dd').style.transform = `scale(${1 - .55 * k}) translateY(${k * 8}px)`; } });
-tx(55.4, 60.0, '注意：界面处局部电场很强', { cls: 's', x: 1800, y: 150, anchor: 1 });
-// 比较
-tx(62.6, 77.6, '传统固体栅介质', { at: () => vv(0, -5.6), obj: A.g, cls: 'l' });
-tx(62.8, 77.6, '电双层栅控', { at: () => vv(0, -5.6), obj: B.g, cls: 'l' });
-tx(64.0, 78.0, '目标：相同的 ΔQ', { cls: 'm', y: 130 });
-tx(66.2, 78.2, '', { at: () => vv(0, A.topY + A.colH + .7), obj: A.g, cls: 'l warm', split: false, update: (t, el) => el.innerHTML = `所需 V<sub>G</sub>：高` });
-tx(66.2, 78.2, '', { at: () => vv(0, B.topY + B.colH + .7), obj: B.g, cls: 'l cool', split: false, update: (t, el) => el.innerHTML = `所需 V<sub>G</sub>：低` });
+tx(55.4, 60.0, 'Strong local field at the interface', { cls: 's', x: 1800, y: 150, anchor: 1 });
+// Device comparison.
+tx(64.0, 77.6, 'Solid gate dielectric', { cls: 'l', x: 500, y: 860 });
+tx(64.0, 77.6, 'EDL gating', { cls: 'l', x: 1420, y: 860 });
+tx(64.0, 78.0, 'Same target ΔQ', { cls: 'm', y: 130 });
+tx(66.2, 78.2, '', { at: () => vv(0, A.topY + A.colH + .7), obj: A.g, cls: 'l warm', split: false, update: (t, el) => el.innerHTML = `Required V<sub>G</sub>: high` });
+tx(66.2, 78.2, '', { at: () => vv(0, B.topY + B.colH + .7), obj: B.g, cls: 'l cool', split: false, update: (t, el) => el.innerHTML = `Required V<sub>G</sub>: low` });
 tx(70.8, 78.0, 'ΔV = ΔQ / C', { cls: 'f', x: 1800, y: 130, anchor: 1 });
 tx(72.2, 78.0, 'C<sub>EDL</sub> ≫ C<sub>ox</sub>', { cls: 'f', x: 1800, y: 214, anchor: 1, split: false });
-// 击穿
+// Breakdown.
 tx(78.6, 87.4, 'E ≈ V / d', { cls: 'f', x: 120, y: 150, anchor: 0 });
-tx(81.0, 87.4, '缺陷累积', { at: vv(-2.5, .35, 3), obj: A.g, cls: 's warm', lead: 1 });
-tx(85.0, 87.4, '击穿通路', { at: vv(.9, .35, 0), obj: A.g, cls: 'l warm', dx: -240, dy: 210, lead: 1 });
-tx(87.4, 89.8, '更低的工作栅压', { cls: 'm', x: 1800, y: 150, anchor: 1 });
-// 边界条件
-const cav = ['低栅压 ≠ 界面电场弱：电双层内局部电场仍可很强', '材料本身的击穿场强并未提高', '电解质有电化学稳定窗口，过压同样会反应、退化', '离子不承担源漏电流；电双层不解决源漏方向的高场与发热失效'];
-tx(89.6, 96.2, '需要分清的几点', { cls: 'm', x: 120, y: 200, anchor: 0 });
-cav.forEach((s, i) => tx(90 + i * 1.1, 96.2, s, { cls: 'l', x: 120, y: 300 + i * 84, anchor: 0, stag: .006 }));
-// 结尾
-tx(97.0, 102, '离子重排 → 电双层 → 有效栅电容增大 → 同样 ΔQ 所需栅压降低 → 高栅压相关风险减弱', { cls: 'cap', x: 960, y: 300, stag: .006 });
-tx(98.2, 102, '离子电双层栅控', { cls: 'h', y: 170, stag: .05 });
-// 图例
-tx(4.4, 28.4, '<i class="dot" style="background:#2456c8"></i>电子 −　<i class="ring"></i>空穴 +　<i class="dot" style="background:#7a6fae"></i>栅极正电荷', { cls: 'leg', x: 1880, y: 1046, anchor: 1, split: false });
-tx(28.4, 96.2, '<i class="dot" style="background:#c98a2b"></i>阳离子 +　<i class="dot" style="background:#3f8a62"></i>阴离子 −　<i class="dot" style="background:#2456c8"></i>电子 −　<i class="ring"></i>空穴 +　<i class="dot" style="background:#7a6fae"></i>栅极正电荷', { cls: 'leg', x: 1880, y: 1046, anchor: 1, split: false });
+tx(81.0, 87.4, 'Defects accumulate', { at: vv(-2.5, .35, 3), obj: A.g, cls: 's warm', lead: 1 });
+tx(85.0, 87.4, 'Breakdown path', { at: vv(.9, .35, 0), obj: A.g, cls: 'l warm', dx: -240, dy: 210, lead: 1 });
+tx(87.4, 89.8, 'Lower operating gate voltage', { cls: 'm', x: 1800, y: 150, anchor: 1 });
+// Boundary conditions.
+const cav = ['Strong interfacial fields remain.', 'Intrinsic breakdown field: unchanged.', 'Electrochemical stability still limits bias.'];
+tx(89.8, 96.2, 'Lower voltage has limits', { cls: 'm', x: 120, y: 108, anchor: 0 });
+cav.forEach((s, i) => tx(89.8, 96.2, s, { cls: 'l', x: 120, y: 220 + i * 92, anchor: 0, split: false }));
+// Closing thesis, with room to read it.
+tx(96.4, 102, 'Higher capacitance → lower gate voltage<br>Less high-voltage stress for the same ΔQ.', { cls: 'cap', x: 960, y: 325, split: false });
+tx(96.4, 102, 'Electric-double-layer gating', { cls: 'h', y: 170, split: false });
+// Legend.
+tx(4.4, 26.729032258064516, '<i class="dot" style="background:#2456c8"></i>Electrons −　<i class="ring"></i>Holes +　<i class="dot" style="background:#7a6fae"></i>Positive gate charge', { cls: 'leg', x: 1880, y: 1046, anchor: 1, split: false });
+tx(26.729032258064516, 96.2, '<i class="dot" style="background:#c98a2b"></i>Cations +　<i class="dot" style="background:#3f8a62"></i>Anions −　<i class="dot" style="background:#2456c8"></i>Electrons −　<i class="ring"></i>Holes +　<i class="dot" style="background:#7a6fae"></i>Positive gate charge', { cls: 'leg', x: 1880, y: 1046, anchor: 1, split: false });
 
-// ---------- 阅读时间重映射：故事时间 s → 影片时间 T ----------
-function need(html) { const n = html.replace(/<[^>]+>/g, '').replace(/\s/g, '').length; return Math.max(1.9, n / 5.8 + 0.5); }
-const SEG = CAPS.map(c => [c[0], c[1], need(c[2])]); SEG.push([89.8, 96.2, 13.5], [96.4, 102, 6]); SEG.sort((a, b) => a[0] - b[0]);
-const WS = [0], WT = [0];
-for (const [s0, s1, nd] of SEG) { const cs = WS[WS.length - 1], ct = WT[WT.length - 1]; if (s0 > cs) { WS.push(s0); WT.push(ct + s0 - cs); } const c2 = WT[WT.length - 1]; WS.push(s1); WT.push(c2 + Math.max((s1 - s0) * (s0 >= 40 ? .62 : s0 >= 17 ? .8 : 1), nd)); }
-if (WS[WS.length - 1] < STORY) { WT.push(WT[WT.length - 1] + STORY - WS[WS.length - 1]); WS.push(STORY); }
-DUR = WT[WT.length - 1]; window.DUR = DUR; window.WARP = { S: WS, T: WT };
+// ---------- Reading-time remapping: story time s to film time T ----------
+// Showcase v5: one coordinated reveal; no separate onset gesture or restart.
+const WS = [0,4.4,10,17.2,22.2,27.4,28.4,34.6,44,50.4,60.4,64,74,78,85,89.8,96.2,102];
+const WT = [0,2.2,4.7,8.2,10,16.2,17.2,22.5,30,37,47,50.5,60,64,72,77,82.5,87];
+DUR = WT[WT.length - 1];
+// A local editorial time adjustment shortens the settled comparison by two
+// seconds. Existing scene clocks stay intact, preserving the accepted shots.
+// The speed returns continuously to normal at both ends of the adjustment.
+function sourceAt(T) {
+  if (T <= 60) return T;
+  if (T >= 62) return T + 2;
+  const u = (T - 60) / 2;
+  return 60 + 2 * u + 2 * (3 * u * u - 2 * u * u * u);
+}
+function editedAt(T) {
+  if (T <= 60) return T;
+  if (T >= 64) return T - 2;
+  let lo = 60, hi = 62;
+  for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (sourceAt(mid) < T) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+window.DUR = editedAt(DUR); window.WARP = { S: WS, T: WT.map(editedAt) };
 function storyAt(T) { let i = 0; while (i < WT.length - 2 && T > WT[i + 1]) i++; return lerp(WS[i], WS[i + 1], clamp((T - WT[i]) / (WT[i + 1] - WT[i]))); }
-// ---------- 时间函数 ----------
-function vgPhase1(t) { return ss(t, 4.4, 10.0) * 1.0; } // 归一化栅压（第一段）
-// 相机关键帧：t, 目标 x,y,z, yaw°, pitch°, 画面高度 h, fov°
+function filmAt(s) {
+  let i = 0; while (i < WS.length - 2 && s > WS[i + 1]) i++;
+  return lerp(WT[i], WT[i + 1], clamp((s - WS[i]) / (WS[i + 1] - WS[i])));
+}
+// Integrate a positive velocity profile: begin gently, accelerate to 13.65 s, release by 16.2 s.
+function integratedSmoothRamp(x, width) {
+  if (x <= 0) return 0;
+  if (x >= width) return x - width / 2;
+  const u = x / width; return width * (u ** 6 - 3 * u ** 5 + 2.5 * u ** 4);
+}
+function revealAt(f) {
+  const s = .55 * integratedSmoothRamp(f - 10, .4) + .45 * integratedSmoothRamp(f - 10.4, 3.25) - integratedSmoothRamp(f - 13.65, 2.55);
+  return clamp(s / 3.90375);
+}
+function volumeAt(f) { return revealAt(f); }
+// ---------- Timing functions ----------
+function vgPhase1(t) { return ss(t, 4.4, 10.0) * 1.0; } // Normalized gate voltage during the opening.
+// Camera keys: t, target x/y/z, yaw, pitch, visible height h, and field of view (angles in degrees).
 const K = [
-  [0, 0, -1.4, 0, 0, 0, 11.5, 4],
-  [4, 0, -1.0, 0, 0, 0, 10.4, 4],
-  [8, 0, -.6, 0, 0, 0, 8.6, 4],
-  [10.4, -.6, -.25, 0, 0, 0, 5.0, 4],
-  [12.2, -.6, -.35, 0, 0, 0, 5.6, 4],
-  [16.5, 1.2, -.5, 0, 0, 0, 9.6, 4],
-  [20, 0, 0, 0, 0, 0, 8.2, 4],
-  [22, 0, 0, 0, 0, 0, 7.9, 4],
-  [27.5, 0, .2, 0, 34, 16, 10.5, 34],
-  [31.5, 0, .9, 0, 40, 13, 9.4, 34],
-  [35, 0, 1.1, 0, 26, 14, 9.6, 34],
+  [0, 0, -.6, 0, 0, 0, 10.5, 4],
+  [22.2, 0, -.6, 0, 0, 0, 10.5, 4],
+  [27.4, 0, .35, 0, 34, 17, 11.1, 34],
+  [31.5, 0, .9, 0, 36, 15, 10.4, 34],
+  [35, 0, 1.1, 0, 30, 14, 9.6, 34],
   [44, 0, 1.0, 0, 18, 11, 7.2, 34],
   [46.5, 0, .4, 0, 14, 12, 2.4, 38],
   [50.5, 0, .002, .06, 10, 17, .3, 40],
   [60, 0, .002, .06, -8, 13, .24, 40],
   [62.6, 2.5, -.2, 0, 8, 14, 10, 34],
-  [66, 0, 1.2, 0, 14, 12, 20, 32],
-  [78, 0, 1.4, 0, 10, 9, 18.5, 32],
+  [66, 0, 2.5, 0, 14, 12, 25, 32],
+  [78, 0, 2.5, 0, 10, 9, 24.8, 32],
   [80.5, -9.5, .3, 3, 20, 3, 2.4, 34],
   [86, -9.5, .3, 3, 14, 3, 3.2, 34],
-  [89, 9.5, .9, 0, -22, 10, 7.5, 34],
-  [96, 0, 3.4, 0, 6, 7, 30, 28],
-  [101, 0, -1.2, 0, 0, 0, 30, 4],
-  [102, 0, -1.2, 0, 0, 0, 30, 4]];
+  [89, 9.5, 1.4, 0, -22, 10, 9.5, 34],
+  [96, 0, 4.0, 0, 6, 7, 28.5, 28],
+  [101, 9.5, 1.0, 0, 0, 0, 21, 4],
+  [102, 9.5, 1.0, 0, 0, 0, 21, 4]];
+// Shape-preserving camera curves in film seconds: interior waypoints no longer
+// force a fresh ease-in/out on every shot. Log-height keeps zoom perceptual.
+const CK = K.filter(k => k[0] >= 44).map(k => [filmAt(k[0]), ...k.slice(1)]);
+const CV = Array.from({ length: 7 }, (_, j) => CK.map(k => j === 5 ? Math.log(k[j + 1]) : k[j + 1]));
+const CM = CV.map(v => {
+  const h = CK.slice(1).map((k, i) => k[0] - CK[i][0]);
+  const d = h.map((dt, i) => (v[i + 1] - v[i]) / dt);
+  return v.map((_, i) => {
+    // The accepted opening reaches 30 s at rest; the ending also settles.
+    if (i === 0 || i === v.length - 1) return 0;
+    if (d[i - 1] * d[i] <= 0) return 0;
+    const w1 = 2 * h[i] + h[i - 1], w2 = h[i] + 2 * h[i - 1];
+    return (w1 + w2) / (w1 / d[i - 1] + w2 / d[i]);
+  });
+});
 let camH = 10;
 function camAt(t) {
-  let i = 0; while (i < K.length - 2 && t > K[i + 1][0]) i++;
-  const a = K[i], b = K[i + 1]; const u0 = seg(t, a[0], b[0]); const k = a[0] === 22 ? eio(Math.pow(u0, 1.7)) : eio(u0);
-  const o = {}; ['t', 'x', 'y', 'z', 'yaw', 'pitch', 'h', 'fov'].forEach((n, j) => o[n] = j === 6 ? Math.exp(lerp(Math.log(a[j]), Math.log(b[j]), k)) : lerp(a[j], b[j], k));
+  const f = filmAt(t);
+  if (f <= 30) {
+    const r = revealAt(f), track = ss(f, 15.0, 30);
+    return { t, x: 0, y: -.6 + .95 * r + .65 * track, z: 0,
+      yaw: 34 * r - 16 * track, pitch: 17 * r - 6 * track,
+      h: Math.exp(Math.log(10.5) + Math.log(11.1 / 10.5) * r + Math.log(7.2 / 11.1) * track),
+      fov: 4 + 30 * r };
+  }
+  let i = 0; while (i < CK.length - 2 && f > CK[i + 1][0]) i++;
+  const dt = CK[i + 1][0] - CK[i][0], u = seg(f, CK[i][0], CK[i + 1][0]);
+  const h00 = 2 * u ** 3 - 3 * u ** 2 + 1, h10 = u ** 3 - 2 * u ** 2 + u;
+  const h01 = -2 * u ** 3 + 3 * u ** 2, h11 = u ** 3 - u ** 2;
+  const o = { t };
+  ['x', 'y', 'z', 'yaw', 'pitch', 'h', 'fov'].forEach((n, j) => {
+    const value = h00 * CV[j][i] + h10 * dt * CM[j][i] + h01 * CV[j][i + 1] + h11 * dt * CM[j][i + 1];
+    o[n] = n === 'h' ? Math.exp(value) : value;
+  });
   return o;
 }
 function placeCam(t) {
   const c = camAt(t); { const pk = ss(t, 84.55, 84.95) * (1 - ss(t, 85.3, 86.8)); c.h *= 1 - .58 * pk; c.x = lerp(c.x, -9.5 + fx, .7 * pk); const sk = t > 85 && t < 87 ? Math.exp(-(t - 85) * 4.5) : 0; c.x += sk * .05 * c.h * Math.sin(t * 93); c.y += sk * .04 * c.h * Math.cos(t * 71); } camH = c.h;
-  // 手持感：很小的双正弦漂移，在 2D 段和微观段几乎为零
-  const hand = (t > 22 && t < 96) ? .35 : .05;
+  // Subtle two-sine camera drift, nearly zero in the 2D and microscopic sections.
+  const hand = (t > 34.6 && t < 96) ? .15 : 0;
   const yaw = (c.yaw + Math.sin(t * .37) * .6 * hand) * Math.PI / 180, pit = (c.pitch + Math.sin(t * .29 + 1) * .4 * hand) * Math.PI / 180;
   const dist = c.h / (2 * Math.tan(c.fov * Math.PI / 360));
   cam.fov = c.fov; cam.position.set(c.x + dist * Math.sin(yaw) * Math.cos(pit), c.y + dist * Math.sin(pit), c.z + dist * Math.cos(yaw) * Math.cos(pit));
   cam.lookAt(c.x, c.y, c.z); cam.near = dist * .02; cam.far = dist * 20 + 200; cam.updateProjectionMatrix();
   fill.position.copy(cam.position);
-  { const sw = seg(t, 22.3, 25.2), bw = Math.sin(Math.PI * sw); key.intensity = 2.0 + 1.3 * bw; key.position.set(lerp(-14, 14, sw) * (sw > 0 && sw < 1 ? 1 : 0) + (sw > 0 && sw < 1 ? 0 : 6), 10, 8); }
+  key.position.set(6, 10, 8);
 }
 
-// 器件状态
+// Device state.
 function layoutDevice(d, st) {
   const dz = st.dz, top = st.thick, gH = .8;
   setBox(d.sub, -8, 8, -5, 0, dz); setBox(d.S, -8.004, -GX, -1.45, 0.004, dz + .03); setBox(d.D, GX, 8.004, -1.45, 0.004, dz + .03);
@@ -344,87 +385,126 @@ function layoutDevice(d, st) {
   setBox(d.cS, -7.4, -5.2, 0, .32, dz * .7); setBox(d.cD, 5.2, 7.4, 0, .32, dz * .7);
   d.topY = top + gH;
   const flat = st.flat;
-  [d.sub, d.S, d.D, d.diel, d.gel, d.gate, d.cS, d.cD].forEach((p, k) => { const u = p.userData; const al = st.t !== undefined ? st.alpha * ss(st.t, .15 + [0, 1, 1, 2, 2, 3, 4, 4][k] * .38, .75 + [0, 1, 1, 2, 2, 3, 4, 4][k] * .38) : st.alpha; const fillA = st.t !== undefined ? ss(st.t, 1.4 + k * .1, 2.8 + k * .1) : 1; u.m.emissiveIntensity = flat * (u.m.metalness > .5 ? .1 : .3); u.lm.opacity = (.9 * flat + .14) * al; u.m.opacity = u.base * st.alpha * fillA * al; u.m.transparent = true; u.m.depthWrite = u.base >= 1 && st.alpha > .99; });
-  d.diel.userData.m.opacity = .42 * (1 - st.gelK) * st.alpha; d.diel.userData.lm.opacity *= (1 - st.gelK);
-  d.gel.userData.m.opacity = .16 * st.gelK * st.alpha; d.gel.userData.lm.opacity *= st.gelK;
+  [d.sub, d.S, d.D, d.diel, d.gel, d.gate, d.cS, d.cD].forEach((p, k) => { const u = p.userData; const al = st.t !== undefined ? st.alpha * ss(st.t, .15 + [0, 1, 1, 2, 2, 3, 4, 4][k] * .38, .75 + [0, 1, 1, 2, 2, 3, 4, 4][k] * .38) : st.alpha; const fillA = st.t !== undefined ? ss(st.t, 1.4 + k * .1, 2.8 + k * .1) : 1; u.m.emissiveIntensity = flat * (u.m.metalness > .5 ? .1 : .3); u.lm.opacity = (.9 * flat + .22) * al; u.m.opacity = u.base * st.alpha * fillA * al; u.m.transparent = true; u.m.depthWrite = u.base >= 1 && st.alpha > .99; });
+  d.diel.userData.m.opacity = .48 * (1 - st.gelK) * st.alpha; d.diel.userData.lm.opacity *= (1 - st.gelK);
+  d.gel.userData.m.opacity = .16 * st.gelK * st.alpha;
+  // The transparent electrolyte already describes its volume; a second box
+  // outline reads as a leftover boundary when the cutaway moves forward.
+  d.gel.userData.lm.opacity = 0;
   if (st.see) [d.sub, d.S, d.D].forEach(p => { const u = p.userData; u.m.opacity *= 1 - .55 * st.see; u.m.depthWrite = st.see < .01; });
   d.g.visible = st.alpha > .002;
 }
+// Integrate a smooth velocity ramp. Stopping holds phase instead of rewinding it.
+function integratedRamp(x, width) {
+  if (x <= 0) return 0;
+  if (x >= width) return x - width / 2;
+  const u = x / width; return width * (u * u * u - .5 * u * u * u * u);
+}
+function channelFlowClock(t) {
+  const f = filmAt(t);
+  return integratedRamp(f - 6.15, .65) - integratedRamp(f - 16.15, 1.2);
+}
+function channelElectronPosition(p, fill, drift) {
+  const k = eio(clamp((fill - p.r * .55) / .45));
+  const span = 15;
+  const phaseX = ((p.tx + 7.5 + drift * 1.8) % span + span) % span - 7.5;
+  return { x: lerp(p.ox, phaseX, k), y: lerp(p.oy, p.ty, k), k };
+}
 function particles(d, t, st) {
-  const dz = st.dz * .94, s = st.ps; // 粒子尺寸
-  // 储备区电子（源漏 n+）
+  const dz = st.dz * .94, s = st.ps; // Particle scale.
+  // Reservoir electrons in the n+ source and drain.
   for (let i = 0; i < d.NR; i++) { const p = d.ro[i]; put(d.res, i, p.x + jit(i, t) * .04, p.y + jit(i + 9, t) * .04, p.z * dz, .062 * s * st.alpha); }
-  // 沟道电子
+  // Channel electrons.
   for (let i = 0; i < d.NE; i++) {
-    const p = d.eo[i]; const k = eio(clamp((st.fill - p.r * .55) / .45));
-    let x = lerp(p.ox, p.tx, k), y = lerp(p.oy, p.ty, k);
-    if (st.drift > 0 && k > .99) { const span = 15, dk = smr(clamp(st.drift / 1.2)); x = ((lerp(p.tx, -7.5 + p.u * span, dk) + 7.5 + st.drift * p.sp * 2.4) % span + span) % span - 7.5; }
+    const p = d.eo[i]; const { x, y, k } = channelElectronPosition(p, st.fill, st.drift);
     const edge = smr(clamp((7.6 - Math.abs(x)) / .6));
-    put(d.el, i, x + jit(i, t, 1.3) * .03, y + jit(i + 3, t, 1.3) * .02, p.z * dz, .072 * s * (k > 0 ? 1 : .0001) * edge * st.alpha);
+    put(d.el, i, x, y + jit(i + 3, filmAt(t), 1.3) * .012, p.z * dz, .072 * s * (k > 0 ? 1 : .0001) * edge * st.alpha);
   }
-  // 空穴
+  // Holes.
   const depl = 1.5 * st.vn;
   for (let i = 0; i < d.NH; i++) {
     const p = d.hp[i]; const sx = smr(clamp((GX + .6 - Math.abs(p.x)) / 1.2));
     const y = p.y - depl * Math.exp(p.y / 1.2) * sx;
     V3.set(p.x + jit(i, t) * .05, y + jit(i + 5, t) * .05, p.z * dz); S3.setScalar(.085 * s * st.alpha); M4.compose(V3, Q0, S3); d.ho.setMatrixAt(i, M4);
   }
-  // 栅极下表面的正电荷
+  // Positive charge at the gate's lower surface.
   const ng = Math.round(d.NG * clamp(st.gq));
   for (let i = 0; i < d.NG; i++) { const c = i % 18, r = Math.floor(i / 18); const sc = i < ng ? 1 : 0.0001; put(d.gq, i, -GX + (c + .5) / 18 * 2 * GX, st.thick - .06, ((r + .5) / 4) * dz * (1 - (st.cut || 0)) - dz / 2, (d.kind === 'ox' ? .1 : .07) * s * sc * st.alpha); }
-  // 场线
-  const fpA = d.field.geometry.attributes.position.array; let n = 0;
+  // Field direction cues travel downward at film-time speed, fading before they restart.
+  const fpA = d.field.geometry.attributes.position.array, fcA = d.field.geometry.attributes.color.array;
+  const fieldT = filmAt(t); let n = 0;
   for (let r = 0; r < 5; r++) for (let c = 0; c < 26; c++) {
-    const x = -GX + (c + .5) / 26 * 2 * GX, z = ((r + .5) / 5 - .5) * dz;
-    const show = (c / 26 < st.fdens || st.fdens >= 1) && (st.flat > .5 ? r === 2 : true);
-    const ph = ((t * 1.4 + c * .37) % 1);
-    const y0 = st.thick - .05 - ph * .3 * st.thick, y1 = y0 - .25 * st.thick;
-    if (show) { fpA.set([x, Math.max(.02, y0), z, x, Math.max(.02, y1), z], n * 6); } else fpA.set([0, -99, 0, 0, -99, 0], n * 6);
+    const phase = ((fieldT / (2.05 + .23 * Math.sin(c * 2.73 + r)) + c * .618033989 + r * .381966011) % 1 + 1) % 1;
+    const x = -GX + (c + .5) / 26 * 2 * GX + .075 * Math.sin(c * 2.39 + r * 1.17);
+    const z = (((r + .5) / 5 - .5) + .023 * Math.sin(c * 1.91 + r * 2.71)) * dz;
+    const show = (c / 26 < st.fdens || st.fdens >= 1) && c % 2 === 0 && (st.flat > .5 ? r === 2 : r % 2 === 0);
+    const y0 = .90 * st.thick, end = .12 * st.thick, length = .33 * st.thick;
+    const tip = lerp(y0 - length, end, phase), tail = tip + length;
+    const wingY = tip + Math.min(.12, .12 * st.thick), wingX = Math.min(.075, .085 * st.thick);
+    const pulse = .95 * ss(phase, 0, .14) * (1 - ss(phase, .80, 1));
+    if (show) {
+      fpA.set([x, y0, z, x, end, z, x, tail, z, x, tip, z, x - wingX, wingY, z, x, tip, z, x + wingX, wingY, z, x, tip, z], n * 24);
+    } else {
+      fpA.fill(0, n * 24, (n + 1) * 24);
+      for (let v = 0; v < 8; v++) fpA[n * 24 + v * 3 + 1] = -99;
+    }
+    for (let v = 0; v < 8; v++) fcA.set([1, 1, 1, show ? (v < 2 ? .28 : pulse) : 0], n * 32 + v * 4);
     n++;
   }
-  d.field.geometry.attributes.position.needsUpdate = true; d.fieldM.opacity = st.fop * st.alpha;
-  d.fieldM.color.set(st.fhot > 0 ? new THREE.Color('#33475e').lerp(new THREE.Color('#d9480f'), st.fhot) : '#33475e');
+  d.field.geometry.attributes.position.needsUpdate = true; d.field.geometry.attributes.color.needsUpdate = true;
+  d.fieldM.opacity = st.fop * st.alpha;
+  d.fieldM.color.set(st.fhot > 0 ? new THREE.Color('#46515c').lerp(new THREE.Color('#d9480f'), st.fhot) : '#46515c');
   [d.el, d.res, d.ho, d.gq].forEach(m => { m.instanceMatrix.needsUpdate = true; m.material.opacity = st.alpha; });
-  // 电压柱
+  // Voltage column.
   d.colH = Math.max(.001, st.col); d.col.scale.set(1, d.colH, 1); d.col.position.set(0, d.topY + d.colH / 2 + .05, 0);
   d.colGlass.scale.set(1, Math.max(.001, st.colMax), 1); d.colGlass.position.set(0, d.topY + st.colMax / 2 + .05, 0);
   d.col.visible = d.colGlass.visible = st.col > .002;
 }
 
-// 透明物体的绘制顺序固定（v3.2）：InstancedMesh 的包围球只在首次渲染时计算并冻结，
-// 透明排序因此依赖“这个浏览器之前渲染过哪些帧”，多 worker 渲染时会出现每 N 帧一次的闪烁。
+// Fixed transparency ordering (v3.2): the InstancedMesh bounding sphere is computed on first render.
+// Otherwise, sorting depends on the browser's frame history and can flicker across render workers.
 scene.traverse(o => { if (o.isInstancedMesh) { o.renderOrder = o.material.depthWrite ? 1 : 3; o.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5); } });
 mshell.renderOrder = 4; surf.renderOrder = 2; mfL.renderOrder = 5;
 window.render = function (T) {
+  const presentationTime = T;
+  T = sourceAt(clamp(T, 0, window.DUR));
   let t = storyAt(clamp(T, 0, DUR));
   placeCam(t);
-  // ---- 宏观状态 B ----
-  const ext = eio(Math.pow(seg(t, 22.2, 27.4), 1.5)) * (1 - ss(t, 96.4, 101));         // 挤出
-  const flat = 1 - ss(t, 21.5, 26.5) + ss(t, 97, 101);              // 平面感
+  // ---- Macroscopic state of the main device ----
+  const ext = volumeAt(T) * (1 - ss(t, 96.4, 101));               // Reveal volume while electrons retain an independent clock.
+  const flat = 1 - volumeAt(T) + ss(t, 97, 101);                  // Flat-view blend.
   const draw = ss(t, .2, 2.6);
-  const gelK = ss(t, 28.4, 31.8) * (1 - ss(t, 96.4, 99.5) * 0);
-  const thick = lerp(.7, 2.4, eio(ss(t, 28.4, 31.2)));
-  const bias = ss(t, 34.6, 41.4);                                   // EDL 偏压
-  const microK = (t > 44 && t < 63) ? 1 - ss(camH, .4, .58) : 0;
+  const gelK = ss(T, 15.4, 18.55);
+  const thick = lerp(.7, 2.4, ss(T, 15.4, 18.8));
+  const bias = ss(T, 19.4, filmAt(41.4));                         // Apply bias after showing the neutral electrolyte.
+  // Bring the surface detail in during the approach, before the close-up fills the frame.
+  const microK = (t > 44 && t < 63) ? 1 - ss(camH, .45, 1.1) : 0;
   const slide = eio(ss(t, 60.5, 66));
-  const Qc = ss(t, 66.6, 73.6);                                       // 比较段共同的 ΔQ
-  // 第一段的栅压、沟道
-  const vn1 = vgPhase1(t) * (1 - ss(t, 28.2, 30.5));
-  const fill1 = ss(t, 6.6, 10.4) * (1 - ss(t, 28.2, 30.5));
+  const Qc = ss(t, 66.6, 73.6);                                       // Common delta Q for the comparison.
+  // Opening gate bias and channel.
+  const vn1 = vgPhase1(t) * (1 - ss(T, 15.8, 17.4));
+  const fill1 = ss(T, 4.7, 6.5) * (1 - ss(T, 15.8, 17.8));
   const fillB = Math.max(fill1, bias * (1 - ss(t, 61, 63.5)), Qc, ss(t, 88, 90) * (1 - ss(t, 99, 101)));
   const fillA = Math.max(Qc, ss(t, 78, 79));
-  const driftT = t > 11.6 && t < 28.6 ? (t - 11.6) * ss(t, 11.6, 12.6) * (1 - ss(t, 27, 28.6)) : 0;
+  const driftT = channelFlowClock(t);
   const alphaB = ss(t, 2.4, 3.6);
-  const cutB = ss(t, 30.5, 33.5) / 3 * (1 - ss(t, 96.4, 98.5));
-  layoutDevice(B, { dz: lerp(.04, 6, ext), thick, flat, alpha: 1, gelK, t: t < 5 ? t : undefined, see: ss(t, 33, 35) * (1 - ss(t, 96, 97.5)), cut: cutB });
-  { const dzB = lerp(.04, 6, ext); grid.scale.set(1, 1, dzB / 2); grid.position.y = .004; gridM.opacity = .22 * ss(t, 31, 34) * (1 - ss(t, 96.4, 98)) * (t > 44 && t < 63 ? ss(camH, .8, 2) : 1); }
+  const cutB = ss(T, 17.4, 20.0) / 3 * (1 - ss(t, 96.4, 98.5));
+  layoutDevice(B, { dz: lerp(.04, 6, ext), thick, flat, alpha: 1, gelK, t: t < 5 ? t : undefined, see: ss(t, 33, 35), cut: cutB });
+  { const dzB = lerp(.04, 6, ext); grid.scale.set(1, 1, dzB / 2); grid.position.y = .004; gridM.opacity = .22 * ss(T, 17.8, 20.6) * (1 - ss(t, 96.4, 98)) * (t > 44 && t < 63 ? ss(camH, .8, 2) : 1); }
   const vnB = Math.max(vn1, bias * .25, Qc * .12, t > 78 ? .12 : 0);
-  particles(B, t, { cut: cutB, dz: lerp(.04, 6, ext), ps: lerp(1.25, 1, ext) * (1 - microK * .97), fill: fillB, drift: driftT, vn: Math.max(vn1, bias), gq: Math.max(vn1, bias) * (1 - ss(t, 61, 63.5)) + Qc * .2 * (t > 63.5 ? 1 : 0), thick, flat, alpha: alphaB * (1 - microK) * (t > 44 && t < 62 ? ss(camH, 1.2, 2.2) : 1), fdens: vn1 * 1.05, fop: (t < 28.5 ? .85 * vn1 : 0), fhot: 0, col: t > 64 ? Qc * .55 : 0, colMax: t > 64 ? 6.4 * ss(t, 64, 66) : 0 });
+  // Complete one 18-marker row for the flat closing illustration. The earlier
+  // low-density 3D comparison and all voltage/channel states remain unchanged.
+  const closingGateMarkers = 18 / B.NG * ss(t, 96.4, 99.2);
+  const gateMarkersB = Math.max(Math.max(vn1, bias) * (1 - ss(t, 61, 63.5)) + Qc * .2 * (t > 63.5 ? 1 : 0), closingGateMarkers);
+  particles(B, t, { cut: cutB, dz: lerp(.04, 6, ext), ps: lerp(1.25, 1, ext) * (1 - microK * .97), fill: fillB, drift: driftT, vn: Math.max(vn1, bias), gq: gateMarkersB, thick, flat, alpha: alphaB * (1 - microK) * (t > 44 && t < 62 ? ss(camH, 1.2, 2.2) : 1), fdens: vn1 * 1.05, fop: (t < 28.5 ? .85 * vn1 : 0), fhot: 0, col: t > 64 ? Qc * .55 : 0, colMax: t > 64 ? 6.4 * ss(t, 64, 66) : 0 });
   B.g.position.x = 9.5 * slide;
-  { const mk = microK; [B.sub, B.S, B.D].forEach(p => { p.userData.m.opacity *= (1 - .85 * mk); p.userData.m.depthWrite = mk < .01 && !(t > 33 && t < 97.5); p.userData.lm.opacity *= (1 - mk); }); B.gel.userData.m.opacity *= (1 - mk); B.gel.userData.lm.opacity *= (1 - mk); }
-  // 主光：2D 时压暗
-  hemi.intensity = .85 + .35 * flat; key.intensity = .6 + 1.5 * (1 - flat); rim.intensity = .8 * (1 - flat); fill.intensity = .4 + .5 * flat;
-  // ---- 离子（介观） ----
+  { const mk = microK; [B.sub, B.S, B.D].forEach(p => { p.userData.m.opacity *= (1 - .85 * mk); p.userData.m.depthWrite = mk < .01 && t <= 33; p.userData.lm.opacity *= (1 - mk); }); B.gel.userData.m.opacity *= (1 - mk); B.gel.userData.lm.opacity *= (1 - mk); }
+  // Main lighting is reduced in the 2D view.
+  hemi.intensity = .85 + .35 * flat;
+  key.intensity = .6 + 1.5 * (1 - flat);
+  rim.intensity = .8 * (1 - flat);
+  fill.intensity = .4 + .5 * flat;
+  // ---- Mesoscopic ions ----
   const mesoK = ss(camH, .38, .8) ; const ionsVis = gelK * (t > 44 && t < 62 ? mesoK : 1) * (1 - ss(t, 96.5, 98.5));
   const biasI = Math.max(bias * (1 - ss(t, 61, 64)), t > 64 ? Math.max(Qc, ss(t, 78, 79)) * (1 - ss(t, 98, 101)) : 0);
   const dzI = lerp(.04, 6, ext) * .92; const zMap = z => (z + .5) * (dzI * (1 - cutB)) - dzI / 2;
@@ -443,7 +523,7 @@ window.render = function (T) {
   const phiK = ss(t, 40.8, 42.8) * (1 - ss(t, 46, 47.5));
   { const a = phiG.attributes.position.array; for (let i = 0; i < phiN; i++) { const y = i / (phiN - 1) * thick; const phi = .5 + .48 * Math.exp(-(thick - y) / .1) - .42 * Math.exp(-y / .1); const drawn = i / phiN <= ss(t, 40.8, 42.6) ? 1 : 0; a.set([5.1 + phi * 2.0 * bias, drawn ? y : thick, zMap(.5) + .01], i * 3); } phiG.attributes.position.needsUpdate = true; phiM.opacity = phiK;
     { const zf = zMap(.5); axG.attributes.position.array.set([5.1, 0, zf, 5.1, thick, zf, 5.1, 0, zf, 7.4, 0, zf]); } axG.attributes.position.needsUpdate = true; axM.opacity = phiK * .8; }
-  // ---- 微观 ----
+  // ---- Microscopic interface ----
   micro.visible = microK > .002;
   if (micro.visible) {
     lat.material.opacity = microK; surfM.opacity = .35 * microK;
@@ -456,7 +536,7 @@ window.render = function (T) {
     mfM.opacity = .55 * ss(t, 54.6, 56) * microK; brM.opacity = ss(t, 52.8, 53.6) * microK;
   }
   if (micro.visible) { let n = 0; for (let i = 0; i < NCL && n < signC.length; i++) { const p = clp[i]; if (p.z < 2 || p.z > 9 || Math.abs(p.x) > 9 || i % 3) continue; mcat.getMatrixAt(i, M4); V3.setFromMatrixPosition(M4); signC[n].position.copy(V3); signC[n].position.z += .34; signC[n].material.opacity = microK; n++; } for (; n < signC.length; n++) signC[n].visible = false; }
-  // ---- 对照器件 A ----
+  // ---- Reference device ----
   const aIn = ss(t, 60.8, 66) * (1 - ss(t, 96.4, 99.6));
   A.g.position.x = lerp(-24, -9.5, eio(ss(t, 60.8, 66)));
   const VA = Qc * 6.0, hotA = ss(t, 79, 85);
@@ -475,18 +555,144 @@ window.render = function (T) {
   flashDiv.style.opacity = (.9 * fk).toFixed(3);
   if (fk > 0) { const sp = toScreen(vv(fx, .35, .05), A.g); flashDiv.style.background = `radial-gradient(50% 55% at 61% 40%,rgba(255,150,60,.8),rgba(255,120,40,.25) 40%,rgba(255,255,255,0) 75%)`; }
   renderer.domElement.style.filter = fk > 0 ? `brightness(${(1 + .55 * fk).toFixed(3)}) contrast(${(1 + .25 * fk).toFixed(3)}) saturate(${(1 + .4 * fk).toFixed(3)})` : 'none';
-  // 背景随微观略变暖黑
+  // Depth fog for the microscopic view.
   if (microK > 0) { const dist = camH / (2 * Math.tan(cam.fov * Math.PI / 360)); scene.fog = scene.fog || new THREE.Fog(FOGC, 1, 2); scene.fog.near = dist * .9; scene.fog.far = dist * 2.0; } else scene.fog = null;
   renderer.render(scene, cam);
   drawText(t);
+  if (REVIEW) {
+    const a = B.el.instanceMatrix.array;
+    window.REVIEW_STATE = {
+      film: presentationTime, sourceFilm: T, story: t, ext, dz: lerp(.04, 6, ext), drift: driftT, gelK, thick, bias, cutB,
+      camera: { ...camAt(t), position: cam.position.toArray() },
+      channelElectrons: Array.from({ length: B.NE }, (_, i) => ({ x: a[i * 16 + 12], y: a[i * 16 + 13], z: a[i * 16 + 14], radius: a[i * 16] })),
+    };
+  }
 };
 
-// 声音事件（与画面同一时间线；audio/score.py 读取 events.json）
+// Sound events share the scene timeline; audio/score.py reads the exported timeline JSON.
 window.EV = [
-  { t: .2, type: 'draw', dur: 2.4 }, { t: 4.4, type: 'field', dur: 5.6 }, { t: 6.6, type: 'gather', dur: 3.8 }, { t: 10.0, type: 'hit' },
-  { t: 11.6, type: 'drift', dur: 5.6 }, { t: 17.8, type: 'glass' }, { t: 19.4, type: 'glass2' }, { t: 22.2, type: 'extrude', dur: 5.2 },
-  { t: 24.0, type: 'glass' }, { t: 28.4, type: 'lift', dur: 3 }, { t: 30.0, type: 'gel', dur: 3 }, { t: 34.6, type: 'ions', dur: 6.8 },
-  { t: 41.4, type: 'edl' }, { t: 44.5, type: 'riser', dur: 5.8 }, { t: 50.3, type: 'arrive' }, { t: 53.0, type: 'tick' }, { t: 55.6, type: 'glass' },
-  { t: 60.3, type: 'pullout', dur: 5.5 }, { t: 66.6, type: 'columns', dur: 7.0 }, { t: 72.2, type: 'glass' }, { t: 79.0, type: 'stress', dur: 6 },
-  { t: 80.0, type: 'defects', dur: 5 }, { t: 84.6, type: 'zap', dur: .4 }, { t: 85.0, type: 'break' }, { t: 89.6, type: 'calm' }, { t: 96.4, type: 'flatten', dur: 4.6 }, { t: 98.2, type: 'end' }];
+  {
+    "t": 0.2,
+    "type": "draw",
+    "dur": 2.4
+  },
+  {
+    "t": 4.4,
+    "type": "field",
+    "dur": 5.6
+  },
+  {
+    "t": 6.6,
+    "type": "gather",
+    "dur": 3.8
+  },
+  {
+    "t": 10,
+    "type": "hit"
+  },
+  {
+    "t": 11.6,
+    "type": "drift",
+    "dur": 5.6
+  },
+  {
+    "t": 17.8,
+    "type": "glass"
+  },
+  {
+    "t": 19.4,
+    "type": "glass2"
+  },
+  {
+    "t": 22.2,
+    "type": "extrude",
+    "dur": 5.2
+  },
+  {
+    "t": 24,
+    "type": "glass"
+  },
+  {
+    "t": 26.729032258064514,
+    "type": "lift",
+    "dur": 3.542665855143035
+  },
+  {
+    "t": 27.232258064516127,
+    "type": "gel",
+    "dur": 2.746987218502742
+  },
+  {
+    "t": 30.973584905660378,
+    "type": "ions",
+    "dur": 10.426415094339621
+  },
+  {
+    "t": 41.4,
+    "type": "edl"
+  },
+  {
+    "t": 44.5,
+    "type": "riser",
+    "dur": 5.8
+  },
+  {
+    "t": 50.3,
+    "type": "arrive"
+  },
+  {
+    "t": 53,
+    "type": "tick"
+  },
+  {
+    "t": 55.6,
+    "type": "glass"
+  },
+  {
+    "t": 60.3,
+    "type": "pullout",
+    "dur": 5.5
+  },
+  {
+    "t": 66.6,
+    "type": "columns",
+    "dur": 7
+  },
+  {
+    "t": 72.2,
+    "type": "glass"
+  },
+  {
+    "t": 79,
+    "type": "stress",
+    "dur": 6
+  },
+  {
+    "t": 80,
+    "type": "defects",
+    "dur": 5
+  },
+  {
+    "t": 84.6,
+    "type": "zap",
+    "dur": 0.4
+  },
+  {
+    "t": 85,
+    "type": "break"
+  },
+  {
+    "t": 89.6,
+    "type": "calm"
+  },
+  {
+    "t": 96.4,
+    "type": "flatten",
+    "dur": 4.6
+  },
+  {
+    "t": 98.2,
+    "type": "end"
+  }
+];
 document.fonts.ready.then(() => { window.render(0); window.READY = true; });

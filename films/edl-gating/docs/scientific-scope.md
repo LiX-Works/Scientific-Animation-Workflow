@@ -22,7 +22,7 @@ Large-capacitance electrolyte gating and low-voltage operation are experimentall
 
 The animation's `Q = CV` and `ΔV = ΔQ/C` labels are teaching approximations. A nonlinear device may require differential capacitance and explicit treatment of threshold, surface potential, traps and quantum capacitance. The primary modeling study [“Impact of Large Gate Voltages and Ultrathin Polymer Electrolytes on Carrier Density in Electric-Double-Layer-Gated Two-Dimensional Crystal Transistors”](https://pubs.acs.org/doi/10.1021/acsami.2c13140) treats coupled ion/carrier transport and semiconductor quantum capacitance rather than replacing the full device with one geometric capacitor.
 
-The two device illustrations share a target charge parameter. The displayed **100-fold capacitance example** and voltage-column heights are schematic; their graphic dimensions are not a quantitative scale, and they should not be read as measured ratios.
+The two device illustrations share a target charge parameter. The displayed **C_EDL ≫ C_ox** relation and voltage-column heights are schematic; their graphic dimensions are not a quantitative scale and should not be read as measured ratios.
 
 ## Breakdown: the necessary qualification
 
@@ -45,6 +45,7 @@ The defensible conclusion is conditional: **more efficient gate coupling can all
 |---|---|---|
 | Particle spheres and rings | Charge sign, location and qualitative redistribution | Not literal ion size, carrier count, orbit or transport trajectory |
 | Cutaway and interface grid | Separate overlapping volumes and identify the interface | Visualization aids, not an extra physical layer |
+| Moving downward field cues | Make the gate-field direction visible | Direction indicators, not charges flowing through the dielectric |
 | Scale bar during the camera dive | Orient the viewer between device and interface views | Schematic geometry, not a measured cross-section |
 | Potential profile | Emphasize interfacial voltage drops | Hand-authored curve, not a solved Poisson profile |
 | 2D-to-3D transformation | Preserve device identity while changing viewpoint | A designed transition, not a physical deformation experiment |

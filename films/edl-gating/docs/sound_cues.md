@@ -1,40 +1,39 @@
-# Sound Design and Event Cues
+# Sound design and event cues
 
-The film uses **synthesized music and effects without speech narration**. `audio/score.py` builds the score with NumPy/SciPy at 48 kHz stereo. The retained script does not load outside audio samples or invoke a music-generation API.
+The English v6 edition uses **synthesized music and effects without narration**. `audio/score.py` generates 85 seconds of 48 kHz stereo audio with NumPy/SciPy. It loads no external audio samples and calls no music-generation API.
 
-The v5 pulse is **104 BPM**. Earlier notes referred to 92 BPM; that is not the current `BPM` value. Music tempo is distinct from particle speed and caption-reading time.
+The score has a continuous **108 BPM** grid. Tempo is independent of particle speed and camera motion. The musical bus is raised by **2 dB** relative to the earlier English review arrangement; transition effects are not all raised with it.
 
-## One timing map for picture and sound
+## Picture and sound share a timeline
 
-`src/timeline.json` contains story-time sound events and the story-to-film mapping. The score's `F(s)` interpolation places events on the audio timeline. The visual program uses the inverse mapping.
+`src/timeline.json` contains the 0–102 story-coordinate events and their mapping to the **85-second playback timeline**. The score's `F(s)` interpolation places these events in the mix. Regenerate the timeline before rebuilding audio after a timing change. The visual program's internal staging clock is not the output duration.
 
-All ranges below are **story coordinates**, not playback timestamps. The 0–102 s story maps to approximately 146.0508 s of film. Synthesis adds one second of audio tail; the encode governs delivered film length. Regenerate the timeline before rebuilding audio when captions or timing change. [Rendering instructions](rendering.md) describe the order.
-
-## Musical arc
-
-| Story range | Sound palette | Narrative job |
-|---|---|---|
-| 0–22 s | Soft harmonic bed, plucked pulse and a gradually established low beat | Establish the device and charge-control logic |
-| 22–34 s | Receding pulse, rising noise and transition accents | Support extrusion and the electrolyte view |
-| 34–60 s | Low drone, granular texture and sparse bells | Give the interface more space |
-| 60–78 s | Pulse and bass return with greater rhythmic energy | Support the comparative task |
-| 78–88 s | Tighter low pulses, dissonance and noise | Build tension for the failure illustration |
-| 88–102 s | Reduced tension and harmonic resolution | Leave room for limitations and the final chain |
+| Playback time | Musical or sound role |
+|---|---|
+| 0–10 s | Soft harmony, plucked pulse and a restrained low beat establish the device |
+| 10–16 s | A gradual low-frequency build supports the dimensional reveal; one main accent lands at 13.65 s |
+| 15–30 s | The pulse continues beneath the electrolyte transition and ion redistribution |
+| 30–47 s | A scale-change cue leads into a quieter, textured interface passage |
+| 47–62 s | Pulse and bass support the return to the device and the voltage comparison |
+| 62–75 s | Tension builds toward the schematic breakdown at 70 s, then settles |
+| 75–85 s | Reduced tension and harmonic resolution leave room for the limits and closing statement |
 
 ## Event cues
 
-| Event | Synthesized response | Intention |
-|---|---|---|
-| Cross-section drawing | Short band-limited noise strokes | Give construction a tactile rhythm |
-| Field and channel formation | Low hum, gathering texture and a threshold accent | Mark a state change without speech |
-| Electron drift | Fine noise texture | Support motion without crowding the text |
-| Extrusion into 3D | Broad whoosh and low-frequency movement | Connect depth to the transition |
-| Ion redistribution and EDL formation | Granular ticks followed by a low paired accent | Distinguish motion from an established interface |
-| Camera dive | Riser and arrival accent | Make scale change audible |
-| Voltage comparison | Rising tones at different ranges | Reinforce voltage indicators |
-| Defects and breakdown | Sparse crackles, short zap and heavier impact | Emphasize the schematic sequence |
-| Flattening and ending | Settling sound and harmonic close | Return to the opening idea |
+Construction uses short filtered-noise strokes. Field/channel formation receives low gathering textures; drift uses a fine noise layer. Dimensional and scale transitions use broad sweeps and low movement. Ion redistribution and interface formation receive granular ticks and paired accents. The voltage comparison uses rising tones at different ranges.
 
-At selected impacts, the script lowers music beneath effects and adds a synthesized reverberation response. The packaging pipeline uses loudness normalization targeting −16 LUFS and a −1.5 dBTP ceiling. These are processing targets, rather than a claim that every historical encode was independently measured to match them.
+The breakdown cue restores the original film's three-layer construction at levels suited to this arrangement:
 
-The sounds are editorial cues, not recordings of ions, fields or a real breakdown event. They support explanation without serving as physical evidence.
+- **1.4 s crackle**, with filtered noise and a decaying envelope.
+- **1.2 s downward bass impact**.
+- **3.5 s low-frequency tail**, beginning 20 ms after impact, followed by quieter reverberation.
+
+This restores the construction and decay character of the original cue; it does not copy an old full soundtrack or reproduce the historical waveform byte for byte. Music is ducked around major impacts and continues underneath their tails.
+
+## Export level
+
+Normalize the complete raw mix **once**, targeting **−14 LUFS** with a **−1 dBTP processing ceiling**, then reuse that normalized master when encoding variants or excerpts. The approved final AAC measured approximately **−14.0 LUFS and −1.2 dBTP**. Targets and measured encode levels are different quantities; do not normalize an already approved master a second time.
+
+The original Chinese v5 film used 104 BPM and a different reading-time arrangement. Those settings are historical. [Rendering instructions](rendering.md) describe the current pipeline.
+
+These sounds are editorial cues, not recordings or acoustic predictions of ions, fields or a physical breakdown event.

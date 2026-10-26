@@ -1,47 +1,38 @@
-# Electric Double-Layer Gating
+# Electric-double-layer gating
 
-**How a larger effective gate capacitance can reduce the voltage needed to control a transistor channel.**
+**A continuous journey from a transistor cross-section to its ionic interface—and why higher gate capacitance can mean lower operating voltage.**
 
-This 2 min 26 s scientific animation follows a transistor from a flat cross-section into a three-dimensional interface, then compares conventional and electric double-layer (EDL) gating at the **same target change in channel charge**. The topic comes from a lecture in an undergraduate sensors course. The film was a self-directed project rather than an assignment, and explains established physics with Chinese on-screen text and a synthesized soundtrack. The gallery adds an optional English explanation track; it summarizes the scientific sequence rather than translating every graphic label.
+The **85-second English film** moves from 2D into 3D, enters the charge layers, and compares conventional and electric-double-layer (EDL) gating at the **same target change in channel charge**. It explains established physics through code-driven images, music and sound effects, with no narration. The topic grew from a lecture in an undergraduate sensors course; the animation was a self-directed project.
 
-[Watch the film](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/edl-v5/edl-gating-v5.mp4) · [How it was made](docs/production-notes.md) · [Render or modify it](docs/rendering.md) · [Scientific scope](docs/scientific-scope.md)
+[Watch the film](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film) · [Download 1080p MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/edl-v6/edl-gating-v6.mp4) · [Production notes](docs/production-notes.md) · [Render or modify it](docs/rendering.md)
 
-## The idea in one minute
+## The physical idea
 
-Ions rearrange near the electrolyte–semiconductor interface and form closely separated charge layers. A large effective capacitance can produce a given change in channel charge with a smaller effective voltage change: **ΔQ ≈ C_eff ΔV_eff**. This can reduce reliance on high gate-voltage operation. It does **not** demonstrate intrinsically stronger materials, weak local EDL fields, or immunity to breakdown.
+Mobile ions rearrange near the electrolyte interfaces. Closely separated ionic and electronic charge layers can provide a large effective gate capacitance. In a local capacitive comparison, **ΔQ ≈ C_eff ΔV_eff**: the same change in channel charge can require a smaller effective voltage change.
 
-Particle counts, distances and the breakdown sequence are explanatory constructions, not experimental data or a device-reliability simulation. [Read the assumptions and limits](docs/scientific-scope.md).
+Lower operating gate voltage can reduce reliance on high-voltage operation. It does **not** imply weak local interfacial fields, stronger dielectric material, or immunity to failure. Particle counts, dimensions and the breakdown path are explanatory constructions. [Scientific scope and limits](docs/scientific-scope.md).
 
 ## What this case demonstrates
 
-The human contributor chose the topic from a course lecture, organized the physical explanation, developed the creative brief with a web-based GPT assistant, and reviewed successive versions for clarity, pace, color and physical meaning. Grok Bot assisted with animation code, camera design, synthesized audio and rendering. The platform was announced to route tasks to back-end models including Claude Opus 5.5; the model used for each step is not visible in the production record.
+- **Scientific framing:** distinguish vertical gate control from lateral source–drain transport and keep the comparison at a common target charge.
+- **Visual explanation:** preserve device identity through a 2D-to-3D transition, a microscopic interface view and a return to the full device.
+- **Iterative review:** turn comments about particle continuity, occlusion, glare, camera speed and sound into specific changes.
+- **A reproducible source:** Three.js and DOM text generate frames, Python synthesizes sound, and FFmpeg encodes the result.
 
-The clearest example of human review is the crowded electrolyte scene: the contributor proposed removing the front third of the upper volume and adding an interface grid. The revised scene uses those cues to separate the ion layer from the channel. Other revisions addressed rendering flicker, a gap in the illustrated electron channel, excessive glare, color ambiguity and an overlong reading rhythm.
+The human contributor chose the topic, organized the explanation, directed the visual treatment and selected revisions. Grok Bot assisted with the original implementation; a web-based GPT assistant helped develop the brief. Codex assisted with the English edition, motion and material revisions, sound, rendering and public source preparation. The records do not identify the underlying model for each original production step. [Credits](docs/credits.md).
 
-[See the feedback-to-change record](docs/production-notes.md#feedback-that-changed-the-film) · [Read selected production prompts](docs/prompts.md)
+## Explore the source
 
-## From concept to film
-
-1. **Define the physics.** Separate vertical gate control from lateral source–drain transport; keep the comparison at a common target charge.
-2. **Build a continuous visual explanation.** Extrude the initial cross-section, enter the interface, then return to the complete device.
-3. **Review meaning and presentation together.** Check charge signs and locations alongside depth cues, labels, timing and sound.
-4. **Render from code.** Three.js and DOM text provide the images, Puppeteer captures frames, Python synthesizes audio, and FFmpeg encodes the result.
-
-The source uses a **102-second story coordinate**, expanded by caption-reading intervals into **146.0508 seconds of film time**. The supplied 30 fps encodes contain 4,383 frames and run for **146.1 seconds**. Rendering only 102 seconds would omit the ending. [Reproduction instructions](docs/rendering.md) explain the current pipeline.
-
-## Explore the project
-
-| Entry | What to look for |
+| Entry | Contents |
 |---|---|
-| [Production notes](docs/production-notes.md) | The rejected first approach, human decisions and v5 revisions |
-| [Selected prompts](docs/prompts.md) | Short, edited translations of real briefs and review feedback |
-| [Visual treatment](docs/treatment.md) | Spatial continuity, restrained language and the v5 palette |
-| [Storyboard](docs/storyboard.md) | Story coordinates and approximate viewing times |
-| [Sound design](docs/sound_cues.md) | Shared timeline, 104 BPM pulse and event-based synthesis |
-| [Scientific scope](docs/scientific-scope.md) | What the comparison explains, and what it cannot establish |
-| [Physics checklist](docs/physics_check.md) | Concrete checks for revising this animation |
-| [Credits and references](docs/credits.md) | Roles, method references and source boundaries |
+| [Production notes](docs/production-notes.md) | Decisions and revisions, including the original v5 history |
+| [Storyboard](docs/storyboard.md) | Current playback times and explanatory sequence |
+| [Visual treatment](docs/treatment.md) | Matte surfaces, depth cues, continuity and emphasis |
+| [Sound design](docs/sound_cues.md) | Continuous 108 BPM score and synchronized effects |
+| [Rendering](docs/rendering.md) | Dependencies, short checks and complete export |
+| [Physics checklist](docs/physics_check.md) | Constraints to retain when editing |
+| [Selected prompts](docs/prompts.md) | Edited excerpts from the original production brief |
 
-The **95.48 MB H.264/AAC copy** is the gallery and [Release](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/edl-v5) download: it preserves more fine detail than the smaller trial. It presents the supplied film at 1080p, 30 fps and 146.1 s. The original higher-bitrate encode is retained in the production archive; encoding options are not separate scientific versions.
+The selected [v6 Release](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/edl-v6) contains a newly rendered **1920×1080, 30 fps, 85.000 s H.264/AAC film**: 2,550 frames and 111,879,725 bytes. [release.json](release.json) records its SHA-256 and media details. The previous [v5 Release](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/edl-v5) preserves the longer Chinese edition.
 
-**Reuse:** original code is MIT-licensed; original film, documentation and audio content are offered under CC BY 4.0 where applicable rights exist. Attribute **Scientific Animation Workflow contributors**. Third-party components retain their own terms; see the [code license](../../LICENSE), [media/documentation license](../../LICENSE-MEDIA.md) and [third-party notices](../../THIRD_PARTY_NOTICES.md).
+**Reuse:** original code is MIT-licensed; original film, documentation and audio are offered under CC BY 4.0 where applicable rights exist. Attribute **Scientific Animation Workflow contributors**. Third-party components retain their own terms: [code license](../../LICENSE), [media/documentation license](../../LICENSE-MEDIA.md), [third-party notices](../../THIRD_PARTY_NOTICES.md).

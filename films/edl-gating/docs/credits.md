@@ -6,14 +6,14 @@
 |---|---|
 | Human project contributor | Chose the topic from a course lecture; organized the physical explanation and its limits; set the creative direction; reviewed clarity, pacing, charge colors, spatial separation and the breakdown illustration; requested and selected revisions |
 | Web-based GPT assistant | Helped formulate the brief and coordinate production requirements |
-| Grok Bot | Assisted with scene and camera code, captions, synthesized music and effects, rendering and iterative production |
-| Codex | Assisted with public source preparation, documentation, portability work and viewing-copy checks |
+| Grok Bot | Assisted with the original scene and camera code, captions, synthesized music and effects, rendering and iterative production |
+| Codex | Assisted with the English edition, motion and material revisions, sound, final rendering, public source preparation, documentation and playback checks |
 
-The project is credited as **Scientific Animation Workflow**. Personal identifying information and full private conversations are not included. Service names identify production roles. Grok Bot was announced in October 2026 to route tasks to back-end models including Claude Opus 5.5, but users cannot see which model handles each step, so the surviving records do not establish the model used for any specific part of this film. Names in reference-repository titles are not evidence of the model that produced this film.
+The project is credited as **Scientific Animation Workflow**. Personal identifying information and full private conversations are not included. Service names identify production roles; the surviving records do not establish the underlying model for each original production step. Names in reference-repository titles are not evidence of the model that produced this film.
 
 ## Original project material
 
-The scene, motion, typography and soundtrack are supplied as programmatic project material. The retained audio script synthesizes its score and effects with NumPy/SciPy and contains no external audio-file loader or music-model API call. The producer's handoff also describes the soundtrack as synthesized without outside samples. This is the recorded production chain, not an assertion of exclusive rights over an AI-generated style or every possible generated element.
+The scene, motion, typography and soundtrack are programmatic project material. The retained audio script synthesizes its score and effects with NumPy/SciPy and contains no external audio-file loader or music-model API call. The original handoff and the current English-edition source both identify generated sound without outside samples. This records the production chain; it does not assert exclusive rights over an AI-generated style or every possible generated element.
 
 Original code is offered under MIT; original film, audio content and documentation are offered under CC BY 4.0 to the extent applicable rights exist. Attribute **Scientific Animation Workflow contributors**, identify the material, link to the project and license, and indicate changes. Third-party components retain their own licenses; see the [code license](../../../LICENSE), [media/documentation license](../../../LICENSE-MEDIA.md) and [third-party notices](../../../THIRD_PARTY_NOTICES.md).
 
@@ -43,4 +43,4 @@ These are contextual citations verified from publisher abstracts, not copied fig
 
 ## Software and typography
 
-The stack comprises Three.js, Puppeteer/Chrome, FFmpeg, Python, NumPy and SciPy. The recorded font families are Noto Sans CJK SC, Noto Serif CJK SC, DejaVu Serif, DejaVu Sans and DejaVu Sans Mono. Font binaries, browser installations and dependency environments are not bundled as project assets. Refer to the [rendering instructions](rendering.md) and [third-party notices](../../../THIRD_PARTY_NOTICES.md) for their separate terms.
+The stack comprises Three.js, Puppeteer/Chrome, FFmpeg, Python, NumPy and SciPy. The current English graphics prioritize DejaVu Sans, DejaVu Serif and DejaVu Sans Mono; Noto CJK families remain as fallbacks inherited from the original Chinese source. Font binaries, browser installations and dependency environments are not bundled as project assets. Refer to the [rendering instructions](rendering.md) and [third-party notices](../../../THIRD_PARTY_NOTICES.md) for their separate terms.

@@ -2,7 +2,7 @@
 
 These excerpts show how the contributor directed the work. They are **edited English translations of selected passages from real Chinese production messages**, not complete transcripts or verbatim English originals. Headings and explanatory notes were added for this case study. Omissions keep the examples focused; the full private conversation is not required to run the project.
 
-The production documents record what was implemented. A request in a prompt alone does not establish that every suggested effect or tool was used.
+These excerpts describe the **original Chinese production brief and v5 review**. The current v6 film is the 85-second English revision; historical requests for Chinese text below are preserved as quotations, not current rendering instructions. A request in a prompt alone does not establish that every suggested effect or tool was used.
 
 ## 1. Establish the scientific task
 
@@ -51,7 +51,7 @@ The last two lines preserve the intent of the original Chinese wording:
 
 > Use concise dynamic Chinese text, background music and sound effects. Sound should support field formation, charge gathering, the move into three dimensions and the final comparison, rather than add a chime to every appearance.
 
-**What this contributed:** no narration in the final film, an event-based synthesized soundtrack and a review of reading time. Caption readability still required additional screen time; the 102 s story coordinate differs from the final 146.1 s film.
+**What this contributed:** no narration, an event-based synthesized soundtrack and a review of reading time. In the historical v5 edition, caption-reading intervals expanded the 102 s story coordinate to a 146.1 s film. The current English v6 edit runs for 85 s.
 
 ## 5. Turn an impression into an actionable revision
 

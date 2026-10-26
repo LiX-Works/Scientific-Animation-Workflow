@@ -73,8 +73,18 @@ export async function serve(port = 0) {
   return { url: `http://127.0.0.1:${server.address().port}`, close: () => new Promise(resolve => server.close(resolve)) };
 }
 
-export async function launch(args) {
-  const flags = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--hide-scrollbars', '--window-size=1920,1080'];
+export function rendererMode(value = 'software') {
+  if (!['software', 'd3d11', 'auto'].includes(value)) throw new Error('--renderer must be software, d3d11, or auto');
+  if (value === 'd3d11' && process.platform !== 'win32') throw new Error('--renderer d3d11 is only available on Windows; use software or auto');
+  return value;
+}
+
+export async function launch(args = {}) {
+  const mode = rendererMode(args.renderer);
+  const flags = ['--hide-scrollbars', '--window-size=1920,1080'];
+  // These flags apply to this browser process only; no system settings change.
+  if (mode === 'software') flags.push('--use-angle=swiftshader', '--enable-unsafe-swiftshader');
+  else if (mode === 'd3d11') flags.push('--use-angle=d3d11', '--enable-gpu');
   if (args['no-sandbox']) flags.push('--no-sandbox');
   return puppeteer.launch({ executablePath: chromePath(args.chrome), headless: true, args: flags });
 }
@@ -88,7 +98,14 @@ export async function readyPage(browser, url, scale = 1) {
   await page.waitForFunction(() => window.READY === true, { timeout: 120000 });
   await page.evaluate(() => document.fonts.ready);
   const timeline = await page.evaluate(() => ({ dur: window.DUR, story: window.WARP.S.at(-1), warp: window.WARP, events: window.EV }));
+  const graphics = await page.evaluate(() => {
+    const canvas = document.querySelector('canvas');
+    const gl = canvas?.getContext('webgl2') || canvas?.getContext('webgl');
+    if (!gl) return { renderer: null, vendor: null };
+    const debug = gl.getExtension('WEBGL_debug_renderer_info');
+    return { renderer: gl.getParameter(debug ? debug.UNMASKED_RENDERER_WEBGL : gl.RENDERER), vendor: gl.getParameter(debug ? debug.UNMASKED_VENDOR_WEBGL : gl.VENDOR) };
+  });
   if (errors.length) throw new Error(`Page error: ${errors.join('; ')}`);
   if (!(Number.isFinite(timeline.dur) && timeline.dur > 0 && timeline.warp && Array.isArray(timeline.events))) throw new Error('Film did not expose a valid DUR/WARP/EV timeline');
-  return { page, timeline, check: () => { if (errors.length) throw new Error(`Page error: ${errors.join('; ')}`); } };
+  return { page, timeline, graphics, check: () => { if (errors.length) throw new Error(`Page error: ${errors.join('; ')}`); } };
 }

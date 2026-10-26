@@ -10,10 +10,11 @@
 
 <p align="center"><a href="https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film"><img src="assets/edl-preview.gif" alt="Watch the full film: a flat transistor gains depth, followed by a view into the ionic interface" width="800"></a></p>
 
-### [▶ Watch the full film](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/edl-v5/edl-gating-v5.mp4)
+### [▶ Watch the full film](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/edl-v6/edl-gating-v6.mp4)
 
-**FULL FILM · 2:26 · 1080p / 30 fps · Music & sound effects**  
-Chinese on-screen graphics, with optional English explanation subtitles. The animation above is a short, silent preview; the selected full-quality film is 95.48 MB.
+**FULL FILM · 1:25 · 1080p / 30 fps · Music & sound effects**
+
+English on-screen graphics and optional English captions. The animation above is a short, silent preview; the full-quality film is 111.88 MB. The [earlier Chinese edition](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/edl-v5) remains available.
 
 **Background:** the topic comes from a lecture in an undergraduate sensors course. It was not an assignment. Inspired by the recent wave of programmatic films made with Claude Opus, the creator took it up as a self-directed project to explore AI-assisted scientific animation, and went as far as discarding a complete first version to rebuild the film from scratch (see below).
 
@@ -27,17 +28,17 @@ The comparison does not imply weaker local interface fields or a higher intrinsi
 
 ## How review shaped the result
 
-The creator organized the scientific content, set the visual direction and reviewed successive versions. A web GPT conversation helped develop the brief; Grok Bot, which was announced in October 2026 to route tasks to back-end models including Claude Opus 5.5, assisted with scene code, captions, synthesized music and sound effects, and rendering. Human review connected the scientific meaning to concrete changes in the film.
+The creator organized the scientific content, set the visual direction and reviewed successive versions. A web-based GPT assistant helped develop the brief, and Grok Bot assisted with the original implementation. Later revisions used Codex to refine the English graphics, camera motion, materials, field indicators, timing and synthesized audio. Human review connected the scientific meaning to concrete changes in the film.
 
-![Earlier and final macro-interface views, showing a cutaway and interface grid that separate the electrolyte from the channel](assets/edl-clarity-comparison.jpg)
+![The current English film separates electrolyte ions from induced channel electrons at the interface](assets/edl-interface.jpg)
 
-*An example of actionable review: cut back the upper electrolyte, reveal the interface grid, and separate charge colors. These frames show the corresponding narrative phase in two revisions.*
+*Review addressed visible problems: cut back the upper electrolyte, separate charge colors and labels, and reveal the two sides of the interface. [Archival revision comparisons](films/edl-gating/docs/production-notes.md) retain the earlier production history.*
 
 | A production decision | What changed in the film |
 | --- | --- |
 | **Give the camera a physical purpose.** An early 5:40 narration-led version felt like presentation slides. | A new 1–3 minute brief followed one device through 2D → 3D → the microscopic interface, with text and sound supporting its motion. |
 | **Separate overlapping physical regions.** The electrolyte hid the interface and channel. | A front cutaway, interface grid and distinct charge colors made the spatial relationship easier to read. |
-| **Keep clarity while tightening the pace.** Long reading intervals and glare interrupted the explanation. | Revised captions, camera timing, materials and sound produced a 2:26 film, with more visible schematic breakdown. |
+| **Keep clarity while tightening the pace.** Long reading intervals and glare interrupted the explanation. | An 85-second English edition uses matte surfaces, clear front/side contrast, a continuous depth reveal, staggered field arrows and coordinated sound. |
 
 These are decisions from this case, not fixed settings for every animation. Further films can explore other principles, devices and applications.
 
@@ -59,7 +60,7 @@ In the EDL case, **a shared story-to-film timeline keeps captions, camera motion
 - [Expanded workflow](docs/workflow.md) and [adding another case](docs/adding-a-case.md)
 - [Four-scene overview](assets/edl-overview.jpg)
 
-The supplied full film has 4,383 frames. The updated tools cover the complete scene; full-film re-rendering and exact historical output equivalence have not been established. The production tools are recorded; the specific model backend is not. Full private conversations and local environments are excluded.
+The current film has 2,550 frames rendered at native 1080p/30fps. Source, caption timing and release metadata are included; font, browser and encoding differences can affect a new render. The earlier v5 film and its history remain available. Full private conversations and local environments are excluded.
 
 </details>
 

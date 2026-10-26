@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tag": "edl-v6",
+  "title": "Electric-double-layer gating",
+  "edition": "English showcase edition",
+  "date": "2026-10-25",
+  "repository": "LiX-Works/Scientific-Animation-Workflow",
+  "video": {
+    "filename": "edl-gating-v6.mp4",
+    "duration_seconds": 85,
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "frames": 2550,
+    "bytes": 111879725,
+    "sha256": "eb1fe12674c01c9be34d684792ce9a4f1cd6f38550f77d633a14f0fd2dc3b69b",
+    "on_screen_language": "en",
+    "audio": "Music and synthesized sound effects; no narration"
+  },
+  "subtitles": {
+    "english": "edl-gating-v6.en.vtt"
+  },
+  "previous_release": "edl-v5",
+  "license": "CC-BY-4.0",
+  "credit": "Scientific Animation Workflow contributors"
+}

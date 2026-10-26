@@ -12,7 +12,9 @@ on:
       - 'docs/**'
       - 'films/**/README*.md'
       - 'films/**/docs/**'
+      - 'films/edl-gating/release.json'
       - 'tools/prepare-gallery.py'
+      - 'tools/build-subtitles.py'
       - 'tools/requirements.txt'
 
 permissions:
@@ -42,17 +44,56 @@ jobs:
           python-version: '3.12'
       - name: Install documentation renderer
         run: python -m pip install -r tools/requirements.txt
-      - name: Download the selected release film
+      - name: Build current optional English captions
+        run: python tools/build-subtitles.py
+      - name: Read selected release
+        id: release
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          release = json.loads(Path('films/edl-gating/release.json').read_text())
+          values = {'tag': release['tag'], 'video': release['video']['filename'], 'subtitles': release['subtitles']['english']}
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as handle:
+              for key, value in values.items():
+                  handle.write(f'{key}={value}\n')
+          PY
+      - name: Download the selected release assets
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          VIDEO_ASSET: ${{ steps.release.outputs.video }}
+          SUBTITLE_ASSET: ${{ steps.release.outputs.subtitles }}
         run: |
           mkdir -p "$RUNNER_TEMP/media"
-          gh release download edl-v5 --pattern edl-gating-v5.mp4 --pattern edl-gating-v5.en.vtt --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/media"
-          cd "$RUNNER_TEMP/media"
-          sha256sum --check SHA256SUMS.txt
-      - name: Build static viewing site
-        run: python tools/prepare-gallery.py --video "$RUNNER_TEMP/media/edl-gating-v5.mp4" --out "$RUNNER_TEMP/site"
+          gh release download "$RELEASE_TAG" --pattern "$VIDEO_ASSET" --pattern "$SUBTITLE_ASSET" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/media"
+      - name: Verify selected checksums and caption source
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          media = Path(os.environ['RUNNER_TEMP']) / 'media'
+          release = json.loads(Path('films/edl-gating/release.json').read_text())
+          selected = [release['video']['filename'], release['subtitles']['english']]
+          checksums = {}
+          for line in (media / 'SHA256SUMS.txt').read_text().splitlines():
+              if line.strip():
+                  digest, name = line.split(maxsplit=1)
+                  checksums[name.lstrip('*')] = digest.lower()
+          for name in selected:
+              path = media / name
+              actual = hashlib.sha256(path.read_bytes()).hexdigest()
+              if actual != checksums.get(name):
+                  raise SystemExit(f'Checksum mismatch or missing entry: {name}')
+          if (media / release['subtitles']['english']).read_bytes() != Path('gallery/edl-gating.en.vtt').read_bytes():
+              raise SystemExit('Published captions do not match the current film source')
+          print('Both selected release assets match SHA256SUMS.txt; captions match the current source.')
+          PY
+      - name: Build static viewing site and verify approved video
+        env:
+          VIDEO_ASSET: ${{ steps.release.outputs.video }}
+        run: python tools/prepare-gallery.py --video "$RUNNER_TEMP/media/$VIDEO_ASSET" --out "$RUNNER_TEMP/site"
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload static site

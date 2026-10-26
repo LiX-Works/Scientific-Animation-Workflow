@@ -1,4 +1,9 @@
-"""Normalize procedural audio and encode H.264/AAC MP4 from rendered frames."""
+"""Encode rendered frames to H.264/AAC MP4; optionally normalize raw audio.
+
+The default v6 master uses CRF 18, the medium preset, and AAC at 192 kbit/s.
+Raw audio is normalized to -14 LUFS / -1 dBTP. Pass --audio-normalized for an
+already mastered mix to preserve its loudness and avoid a second loudnorm pass.
+"""
 import argparse
 import json
 import math
@@ -9,7 +14,8 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-PROFILES = {'master': (None, '256k'), 'medium': (95, '192k'), 'viewing': (55, '192k'), 'preview': (22.5, '128k')}
+PROFILES = {'master': (None, '192k'), 'medium': (95, '192k'), 'viewing': (55, '192k'), 'preview': (22.5, '128k'), 'legacy-master': (None, '256k')}
+CURRENT_VARIANTS = ('master', 'medium', 'viewing', 'preview')
 
 
 def positive(value):
@@ -31,12 +37,13 @@ def main():
     parser.add_argument('--frames', default='frames', help='Directory relative to the film folder, or absolute')
     parser.add_argument('--ext', choices=['jpg', 'png'], default='jpg')
     parser.add_argument('--audio', default='audio/mix.wav')
+    parser.add_argument('--audio-normalized', action='store_true', help='Use the input mix directly, preserving its mastered loudness')
     parser.add_argument('--timeline', default='src/timeline.json')
     parser.add_argument('--fps', type=positive, default=30)
     parser.add_argument('--duration', type=positive, help='Film seconds to encode; default: timeline dur minus start time')
     parser.add_argument('--start-number', type=nonnegative, default=0, help='First frame number, matching render --from')
-    parser.add_argument('--variant', choices=[*PROFILES, 'all'], default='medium')
-    parser.add_argument('--out', help='Single output MP4; cannot be used with --variant all')
+    parser.add_argument('--variant', choices=[*PROFILES, 'all'], default='master', help='Default: master; all selects the four current profiles, excluding legacy-master')
+    parser.add_argument('--out', help='Explicit single output MP4 (recommended); cannot be used with --variant all')
     parser.add_argument('--output-dir', default='output', help='Output folder for named variants; relative to the film folder')
     parser.add_argument('--ffmpeg', default=os.environ.get('FFMPEG', 'ffmpeg'))
     parser.add_argument('--force', action='store_true', help='Replace existing generated MP4 files')
@@ -62,7 +69,7 @@ def main():
     ffmpeg = shutil.which(args.ffmpeg)
     if not ffmpeg:
         parser.error('FFmpeg not found; install it or pass --ffmpeg /path/to/ffmpeg')
-    variants = list(PROFILES) if args.variant == 'all' else [args.variant]
+    variants = list(CURRENT_VARIANTS) if args.variant == 'all' else [args.variant]
     reference_duration = None
     if any(PROFILES[variant][0] is not None for variant in variants):
         try:
@@ -71,7 +78,7 @@ def main():
                 raise ValueError('timeline duration must be positive and finite')
         except (OSError, ValueError, KeyError) as error:
             parser.error(f'Cannot read bitrate reference timeline: {error}')
-    outputs = [(variant, ROOT / args.out if args.out else ROOT / args.output_dir / f'v5_{variant}.mp4') for variant in variants]
+    outputs = [(variant, ROOT / args.out if args.out else ROOT / args.output_dir / f'edl-gating-v6-{variant}.mp4') for variant in variants]
     for _, out in outputs:
         if out.exists() and not args.force:
             parser.error(f'Output exists: {out}; use --force to replace generated video')
@@ -79,18 +86,21 @@ def main():
         temp = Path(temporary)
         normalized = temp / 'normalized.wav'
         prefix = [ffmpeg, '-nostdin', '-hide_banner', '-loglevel', 'error']
-        normalize = prefix + ['-n', '-i', str(audio), '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-ar', '48000', '-ac', '2', str(normalized)]
-        commands = [normalize]
+        normalize = prefix + ['-n', '-i', str(audio), '-af', 'loudnorm=I=-14:TP=-1:LRA=11', '-ar', '48000', '-ac', '2', str(normalized)]
+        commands = [] if args.audio_normalized else [normalize]
+        audio_source = audio if args.audio_normalized else normalized
         for variant, out in outputs:
             target_mb, audio_rate = PROFILES[variant]
             # Frame numbering preserves film time; seek audio to the same time.
             inputs = ['-framerate', str(args.fps), '-start_number', str(args.start_number), '-i', str(frames / f'f%05d.{args.ext}')]
-            audio_input = ['-ss', str(args.start_number / args.fps), '-i', str(normalized)]
-            video = ['-frames:v', str(count), '-vf', 'scale=1920:1080:flags=lanczos', '-pix_fmt', 'yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-bf', '3']
+            audio_input = ['-ss', str(args.start_number / args.fps), '-i', str(audio_source)]
+            preset = 'medium' if variant == 'master' else 'slow'
+            video = ['-frames:v', str(count), '-vf', 'scale=1920:1080:flags=lanczos', '-pix_fmt', 'yuv420p', '-c:v', 'libx264', '-preset', preset, '-bf', '3']
             sound = ['-c:a', 'aac', '-b:a', audio_rate, '-t', str(count / args.fps), '-movflags', '+faststart']
             overwrite = '-y' if args.force else '-n'
             if target_mb is None:
-                commands.append(prefix + [overwrite] + inputs + audio_input + video + ['-crf', '16', '-tune', 'film'] + sound + [str(out)])
+                quality = ['-crf', '16', '-tune', 'film'] if variant == 'legacy-master' else ['-crf', '18']
+                commands.append(prefix + [overwrite] + inputs + audio_input + video + quality + sound + [str(out)])
             else:
                 # Decimal MB budget for the complete film; a short smoke clip gets
                 # the same target bitrate as the full film, not the full 55/95 MB.
@@ -100,7 +110,7 @@ def main():
                 commands.append(prefix + ['-y'] + inputs + codec + ['-pass', '1', '-passlogfile', passlog, '-an', '-f', 'null', os.devnull])
                 commands.append(prefix + [overwrite] + inputs + audio_input + codec + ['-pass', '2', '-passlogfile', passlog] + sound + [str(out)])
         if args.plan:
-            print(json.dumps({'frames': count, 'fps': args.fps, 'duration': count / args.fps, 'commands': commands}, indent=2))
+            print(json.dumps({'frames': count, 'fps': args.fps, 'duration': count / args.fps, 'audioMode': 'already-normalized' if args.audio_normalized else 'normalize-raw', 'commands': commands}, indent=2))
             return
         for _, out in outputs:
             out.parent.mkdir(parents=True, exist_ok=True)

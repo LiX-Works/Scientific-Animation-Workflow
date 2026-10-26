@@ -22,7 +22,7 @@ For another subject, prepare the same three items: a question, a minimal explana
 
 A visual brief gives the production system room to design while making success assessable. State what needs to remain spatially understandable, which event deserves emphasis, and how much reading the audience can do during motion.
 
-The EDL brief called for a continuous journey from a flat transistor diagram into a three-dimensional interface. Keeping recognizable electrodes, charges, and boundaries across the transition helped connect the scales. Short Chinese captions, formulas, music, and sound effects carried the explanation. Removing the default dependence on narration gave the visual sequence more control over pacing.
+The EDL brief called for a continuous journey from a flat transistor diagram into a three-dimensional interface. Keeping recognizable electrodes, charges, and boundaries across the transition helped connect the scales. Concise captions, formulas, music, and sound effects carried the explanation. The current edition uses English graphics. Removing the default dependence on narration gave the visual sequence more control over pacing.
 
 These choices suit this film. Other topics may be clearer in two dimensions, with narration, or through deliberate cuts. Choose the form from the concept and the audience.
 
@@ -43,7 +43,7 @@ Treat each change as a response to an observable problem. Keep a small before/af
 
 ## 4. Make time explicit
 
-The EDL implementation exposes `render(t)`: the renderer asks for a state at an explicit film time and saves the corresponding frame. Its caption timing expands a 102-second story timeline to roughly 146 seconds. Rendering and sound generation must use that same mapping and the full film duration.
+The EDL implementation exposes `render(t)`: the renderer asks for a state at an explicit playback time and saves the corresponding frame. Its current timeline maps a 102-second story coordinate to an 85-second film. Rendering and sound generation must use the current exported mapping and the full playback duration, rather than an internal staging clock or an earlier edition's duration.
 
 Keep camera motion, object state, captions, and sound events tied to explicit time. Fix any random seeds needed for repeatable generation. Verify that rendering a frame directly produces the expected state, including when frames are assigned to different workers. The EDL production history includes a transparency-order problem that became visible during parallel rendering; frame history can affect an image even when the timing interface looks deterministic.
 
@@ -59,6 +59,6 @@ Technical checks complement this review: expected duration and frame count, succ
 
 For each case, publish the final film, source, reproduction steps, scientific scope, and a concise account of the changes that mattered. A few selected prompts and review comments can make the production process concrete. Preserve their meaning and identify edited excerpts.
 
-In the first case, the human contributor prepared the scientific material, set the creative direction, and reviewed the results. Grok Bot produced and revised the visual code, procedural audio, and renders; a separate web GPT conversation assisted with planning and coordination. The available records do not establish the underlying model for each production step. The case documentation describes the observed division of work without assigning unsupported model credits.
+In the first case, the human contributor prepared the scientific material, set the creative direction, and reviewed the results. Grok Bot assisted with the original visual code, procedural audio and renders; a separate web GPT conversation assisted with planning and coordination. Codex assisted with the English edition, later motion/material/sound revisions, rendering and public preparation. The available records do not establish the underlying model for each original production step. The case documentation describes the observed division of work without assigning unsupported model credits.
 
 New examples can follow this process while retaining their own tools and visual language. See [Adding a case](adding-a-case.md).

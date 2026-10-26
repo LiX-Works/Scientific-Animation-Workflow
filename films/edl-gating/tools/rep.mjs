@@ -4,10 +4,10 @@ import path from 'node:path';
 import { options, number, localPath, serve, launch, readyPage } from './runtime.mjs';
 let server, browser;
 try {
-  const a = options({ frames: 'value', fps: 'value', out: 'value', chrome: 'value', raf: 'flag', force: 'flag', help: 'flag', 'no-sandbox': 'flag' });
-  if (a.help) { console.log('Usage: node tools/rep.mjs [--frames 2563,2563] [--fps 30] [--out output/repeat] [--raf] [--force]'); process.exit(0); }
+  const a = options({ frames: 'value', fps: 'value', out: 'value', chrome: 'value', renderer: 'value', raf: 'flag', force: 'flag', help: 'flag', 'no-sandbox': 'flag' });
+  if (a.help) { console.log('Usage: node tools/rep.mjs [--frames 2490,2490] [--fps 30] [--out output/repeat] [--renderer software|d3d11|auto] [--chrome executable] [--raf] [--force] [--no-sandbox]\nRenderer default: software; d3d11 is Windows-only.'); process.exit(0); }
   const fps = number(a.fps ?? 30, 'fps', { min: 1, max: 240 });
-  const seq = (a.frames || process.env.SEQ || '2563').split(',').map(f => number(f, 'frame number', { integer: true }));
+  const seq = (a.frames || process.env.SEQ || '2490,2490').split(',').map(f => number(f, 'frame number', { integer: true }));
   const out = localPath(a.out || 'output/repeat');
   const files = seq.map((_, i) => path.join(out, `rep${i}.jpg`));
   if (!a.force && files.some(file => fs.existsSync(file))) throw new Error('Diagnostic output exists; use a new directory or --force');

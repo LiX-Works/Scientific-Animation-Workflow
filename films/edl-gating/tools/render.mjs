@@ -1,28 +1,30 @@
 // Frame times are film seconds, after the story-time reading warp.
 import fs from 'node:fs';
 import path from 'node:path';
-import { options, number, localPath, serve, launch, readyPage } from './runtime.mjs';
+import { options, number, localPath, serve, launch, readyPage, rendererMode } from './runtime.mjs';
 
 const help = `Usage: node tools/render.mjs [options]
-  --fps 30 --workers 4 --out frames --q 94 --ss 1
+  --fps 30 --workers 1 --out frames --q 94 --ss 1
   --from 0 --to <film seconds>   Default end: live window.DUR
-  --stills 10,50,120            Render selected film times
+  --stills 10,35,70             Render selected film times
   --png                        Lossless frames instead of JPEG
   --mb 4                       PNG subframes for tools/mbavg.py
   --plan                       Print the exact frame plan without rendering
   --report <json>               Save the frame plan; refuses overwrite
   --force                      Replace existing generated files
   --chrome <executable>         Or set CHROME_PATH
+  --renderer software|d3d11|auto Default: software; d3d11 is Windows-only
   --no-sandbox                 Explicit opt-in for isolated Linux containers
 Relative output paths are resolved from the film folder. Existing frames are
 skipped unless --force; use a separate folder when settings change.`;
 
 let server, browser;
 try {
-  const a = options({ fps: 'value', workers: 'value', out: 'value', q: 'value', ss: 'value', from: 'value', to: 'value', stills: 'value', mb: 'value', chrome: 'value', report: 'value', png: 'flag', force: 'flag', plan: 'flag', help: 'flag', 'no-sandbox': 'flag' });
+  const a = options({ fps: 'value', workers: 'value', out: 'value', q: 'value', ss: 'value', from: 'value', to: 'value', stills: 'value', mb: 'value', chrome: 'value', renderer: 'value', report: 'value', png: 'flag', force: 'flag', plan: 'flag', help: 'flag', 'no-sandbox': 'flag' });
   if (a.help) { console.log(help); process.exit(0); }
   const fps = number(a.fps ?? 30, 'fps', { min: 1, max: 240 });
-  const workers = number(a.workers ?? 4, 'workers', { min: 1, max: 32, integer: true });
+  const workers = number(a.workers ?? 1, 'workers', { min: 1, max: 32, integer: true });
+  const requestedRenderer = rendererMode(a.renderer);
   const ss = number(a.ss ?? 1, 'ss', { min: .25, max: 4 });
   const quality = number(a.q ?? 94, 'q', { min: 1, max: 100, integer: true });
   const mb = number(a.mb ?? 1, 'mb', { min: 1, max: 32, integer: true });
@@ -40,7 +42,7 @@ try {
     if (t > first.timeline.dur) throw new Error(`Still time ${t} exceeds film duration ${first.timeline.dur}`);
     return { t, base: `still_${t.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')}` };
   }) : Array.from({ length: endFrame - startFrame }, (_, i) => ({ t: (startFrame + i) / fps, base: `f${String(startFrame + i).padStart(5, '0')}` }));
-  const plan = { filmDuration: first.timeline.dur, fps, from, to: end, startFrame: a.stills ? null : startFrame, endFrameExclusive: a.stills ? null : endFrame, frameCount: jobs.length, format: mb > 1 ? 'png-subframes' : a.png ? 'png' : 'jpg', subframes: mb, width: Math.round(1920 * ss), height: Math.round(1080 * ss), out };
+  const plan = { filmDuration: first.timeline.dur, fps, from, to: end, startFrame: a.stills ? null : startFrame, endFrameExclusive: a.stills ? null : endFrame, frameCount: jobs.length, format: mb > 1 ? 'png-subframes' : a.png ? 'png' : 'jpg', subframes: mb, width: Math.round(1920 * ss), height: Math.round(1080 * ss), requestedRenderer, graphics: first.graphics, out };
   console.log(JSON.stringify(plan, null, 2));
   if (a.report) { const file = localPath(a.report); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(plan, null, 2) + '\n', { flag: a.force ? 'w' : 'wx' }); }
   if (!a.plan) {

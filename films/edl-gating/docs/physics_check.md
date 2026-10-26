@@ -13,7 +13,8 @@ These are the scientific constraints of the explanation. They guide source and v
 | Effective distance | The EDL separation is not the full electrolyte thickness | Brackets, scale cues and text |
 | Comparison quantity | Both drawings reach the same target charge change, not equal measured current or all equal properties | Shared charge parameter and voltage indicators |
 | Capacitance relation | ΔQ ≈ C_eff ΔV_eff is a qualified capacitive relation | Do not treat it as a full nonlinear device solution |
-| Numerical examples | The 100-fold example and bar heights are schematic, not measured or scale-faithful | Keep illustrative labels |
+| Capacitance and voltage graphics | The capacitance inequality and bar heights are schematic, not measured or scale-faithful | Keep the qualitative comparison clear |
+| Field-direction cues | Downward motion illustrates field direction, not charge leakage through the dielectric | Keep these cues distinct from carrier particles |
 | Breakdown image | Defects and a connected path illustrate one gate-related failure idea | Do not add predicted lifetime, probability or threshold |
 | Local field | Low external voltage does not imply weak local EDL field | Retain the limitation |
 | Material strength | EDL formation does not inherently raise intrinsic breakdown strength | Avoid stronger-material or failure-proof wording |
@@ -23,4 +24,4 @@ These are the scientific constraints of the explanation. They guide source and v
 
 Retain the conditional conclusion: **a higher effective gate capacitance can reduce the gate voltage required for a given charge-control task and may reduce risks associated with reliance on high gate voltage.**
 
-When altering subtitles, regenerate the timing map and inspect the limitations as well as the main comparison. A correct source label is insufficient if it disappears too quickly to read in the film.
+When altering timing, regenerate the timeline and subtitles, then inspect the limitations as well as the main comparison. A correct source label is insufficient if it disappears too quickly to read in the film.
