@@ -1,0 +1,28 @@
+{
+  "name": "mcp-explained-film",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Narration-locked, code-driven 2.5D explainer film about the Model Context Protocol",
+  "author": "Scientific Animation Workflow contributors",
+  "license": "MIT",
+  "scripts": {
+    "studio": "remotion studio",
+    "timeline": "node scripts/timeline.mjs",
+    "mix": "node scripts/mix.mjs",
+    "bundle": "remotion bundle --out-dir=build",
+    "stills": "node scripts/stills.mjs",
+    "render": "node scripts/render.mjs"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.533",
+    "@remotion/cli": "4.0.533",
+    "@remotion/renderer": "4.0.533",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.2",
+    "typescript": "5.8.3"
+  }
+}

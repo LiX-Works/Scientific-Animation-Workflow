@@ -1,0 +1,24 @@
+{
+  "_note": "One entry per narration take. say = what the voice reads (spelled for speech); show = the subtitle.",
+  "segments": [
+    {"id": "i1", "say": "On its own, an AI model only produces text. It can't open a file, or run a program.", "show": "On its own, an AI model only produces text. It can't open a file, or run a program."},
+    {"id": "i2", "say": "And software like Origin is built for people: menus, dialogs, buttons. Clicking through a screen is slow, and easy to break.", "show": "And software like Origin is built for people: menus, dialogs, buttons. Clicking through a screen is slow, and easy to break."},
+    {"id": "l1", "say": "But the window is only the top layer. Below it are scripting interfaces, commands, and the core engine. Code can call these directly, but every program does it differently.", "show": "But the window is only the top layer. Below it are scripting interfaces, commands, and the core engine. Code can call these directly, but every program does it differently."},
+    {"id": "i3", "say": "M-C-P, the Model Context Protocol, is a standard way to package those interfaces as tools an AI can read and call.", "show": "MCP, the Model Context Protocol, is a standard way to package those interfaces as tools an AI can read and call."},
+    {"id": "s02", "say": "So what actually happens when you ask an AI to find a paper and save it to Zotero?", "show": "So what actually happens when you ask an AI to find a paper and save it to Zotero?"},
+    {"id": "s03", "say": "First, the app you're talking to asks its M-C-P servers what tools they offer. A server is a small program that sits in front of a piece of software.", "show": "First, the app you're talking to asks its MCP servers what tools they offer. A server is a small program that sits in front of a piece of software."},
+    {"id": "s04", "say": "The answer is just text: each tool's name, what it does, and what inputs it needs.", "show": "The answer is just text: each tool's name, what it does, and what inputs it needs."},
+    {"id": "s05", "say": "That text goes to the model, along with your request.", "show": "That text goes to the model, along with your request."},
+    {"id": "s06", "say": "Here's the key point. The model still can't touch any of this software. All it can do is write text.", "show": "Here's the key point. The model still can't touch any of this software. All it can do is write text."},
+    {"id": "s07", "say": "So it writes a request: use this tool, with these inputs.", "show": "So it writes a request: use this tool, with these inputs."},
+    {"id": "s08", "say": "The app passes that to the right server, in a standard message called tools slash call.", "show": "The app passes that to the right server, in a standard message called tools/call."},
+    {"id": "s09", "say": "The server turns it into the program's own commands, and the program does the work. The result comes back as text.", "show": "The server turns it into the program's own commands, and the program does the work. The result comes back as text."},
+    {"id": "s10", "say": "Now the model can read the results, pick a paper, and copy its D-O-I into the next request.", "show": "Now the model can read the results, pick a paper, and copy its DOI into the next request."},
+    {"id": "s11", "say": "It asks Zotero to save the paper in a collection called Solar. But no such collection exists.", "show": "It asks Zotero to save the paper in a collection called Solar. But no such collection exists."},
+    {"id": "s12", "say": "The error comes back as text too, naming the collections that do exist. So the model fixes its request and tries again.", "show": "The error comes back as text too, naming the collections that do exist. So the model fixes its request and tries again."},
+    {"id": "s13", "say": "Nothing in this loop was specific to papers.", "show": "Nothing in this loop was specific to papers."},
+    {"id": "s14", "say": "Connect a server for Origin or Blender, and the model simply reads a longer list.", "show": "Connect a server for Origin or Blender, and the model simply reads a longer list."},
+    {"id": "s15", "say": "Without a standard, every app writes its own connection to every program. With one, a program needs one server, and every M-C-P app can use it.", "show": "Without a standard, every app writes its own connection to every program. With one, a program needs one server, and every MCP app can use it."},
+    {"id": "s16", "say": "That's M-C-P. List the tools, call one, read the result, and repeat.", "show": "That's MCP. List the tools, call one, read the result, and repeat."}
+  ]
+}

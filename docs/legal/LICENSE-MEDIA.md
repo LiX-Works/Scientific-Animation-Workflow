@@ -4,4 +4,4 @@ Original films, generated music and sound effects, screenshots, diagrams, writte
 
 Credit **Scientific Animation Workflow contributors**, name the film or document, link to this project and the license, and indicate changes. This permits sharing, adaptation and commercial use under the license conditions.
 
-Code, including scene definitions, rendering tools, audio synthesis programs and website code, uses the [MIT License](LICENSE). The outputs of these programs follow the media license above. These licenses do not override the terms of third-party software, fonts or referenced material; see [third-party notices](THIRD_PARTY_NOTICES.md).
+Code, including scene definitions, rendering tools, audio synthesis programs and website code, uses the [MIT License](../../LICENSE). The outputs of these programs follow the media license above. These licenses do not override the terms of third-party software, fonts or referenced material; see [third-party notices](THIRD_PARTY_NOTICES.md).

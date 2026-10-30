@@ -1,67 +1,56 @@
-# An AI-Assisted Workflow for Creating Scientific Animations
+<table>
+<tr>
+<td width="50%"><a href="https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film"><img src="../site/assets/edl-preview.gif" alt="Watch the film: a flat transistor gains depth, followed by a view into the ionic interface" width="100%"></a></td>
+<td width="50%"><a href="https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#mcp"><img src="../films/mcp-explained/assets/mcp-preview.gif" alt="Watch the film: a program's window lifts away to reveal the layers below it" width="100%"></a></td>
+</tr>
+<tr>
+<td><strong><a href="#edl">Electric-double-layer gating</a></strong> · 1:25<br>How can a larger gate capacitance reach the same channel charge at a lower gate voltage?</td>
+<td><strong><a href="#mcp">MCP, Explained in Motion</a></strong> · 2:17<br>An AI model can only write text. How does it end up operating a program?</td>
+</tr>
+<tr>
+<td><em>One continuous camera, from a flat device into its 3D interface.</em><br>Three.js, Puppeteer, NumPy/SciPy, with Grok Bot and Codex</td>
+<td><em>Narration as the clock: every cue follows a spoken word.</em><br>Remotion, Canvas 2D, Node.js, ElevenLabs AI voice, with Claude Code</td>
+</tr>
+</table>
+
+# Scientific Animation Workflow
 
 [中文](README.zh-CN.md)
 
-**Turning scientific concepts into short, code-driven films.** This project combines human scientific framing, creative direction and review with AI-assisted implementation. Finished animations, editable source and production notes show how an explanation becomes a visual work.
+**Code-driven films that explain how something works.** Each film takes one mechanism, states what it does and does not claim, and explores one production technique. Finished film, editable source and method are published together.
 
-**The approach:** understand the mechanism → design the visual explanation → review and revise → render from code.
+<a id="edl"></a>
 
-## First film · Electric-double-layer gating
+## Electric-double-layer gating
 
-<p align="center"><a href="https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film"><img src="assets/edl-preview.gif" alt="Watch the full film: a flat transistor gains depth, followed by a view into the ionic interface" width="800"></a></p>
-
-### [▶ Watch the full film](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/edl-v6/edl-gating-v6.mp4)
-
-**FULL FILM · 1:25 · 1080p / 30 fps · Music & sound effects**
-
-English on-screen graphics and optional English captions. The animation above is a short, silent preview; the full-quality film is 111.88 MB. The [earlier Chinese edition](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/edl-v5) remains available.
-
-**Background:** the topic comes from a lecture in an undergraduate sensors course. It was not an assignment. Inspired by the recent wave of programmatic films made with Claude Opus, the creator took it up as a self-directed project to explore AI-assisted scientific animation, and went as far as discarding a complete first version to rebuild the film from scratch (see below).
-
-**The question:** how can a larger gate capacitance achieve the same change in channel charge at a lower gate voltage?
-
-The film follows one device from a two-dimensional cross-section into a three-dimensional electrolyte interface, then returns to compare two gating schemes. It explains established course physics through a continuous visual narrative.
+**[▶ Watch](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#film) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/edl-v6/edl-gating-v6.mp4) · [Read the case](../films/edl-gating/README.md)**
 
 **Ion redistribution → closely separated interface charges → larger effective capacitance → less gate voltage for the same ΔQ.**
 
-The comparison does not imply weaker local interface fields or a higher intrinsic material breakdown strength. Geometry, particles, field lines and the defect path are explanatory illustrations.
+The film holds the target charge change fixed, so the gate voltage is the only question. It also keeps the limits on screen: a low external voltage can coexist with a strong local field, intrinsic breakdown strength does not rise, and electrochemical stability still applies. In `C = εA/d`, d is the separation of the interfacial charge layers, not the thickness of the electrolyte.
 
-## How review shaped the result
+<a id="mcp"></a>
 
-The creator organized the scientific content, set the visual direction and reviewed successive versions. A web-based GPT assistant helped develop the brief, and Grok Bot assisted with the original implementation. Later revisions used Codex to refine the English graphics, camera motion, materials, field indicators, timing and synthesized audio. Human review connected the scientific meaning to concrete changes in the film.
+## MCP, Explained in Motion
 
-![The current English film separates electrolyte ions from induced channel electrons at the interface](assets/edl-interface.jpg)
+**[▶ Watch](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#mcp) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/mcp-v1/mcp-explained-v1.mp4) · [Read the case](../films/mcp-explained/README.md)**
 
-*Review addressed visible problems: cut back the upper electrolyte, separate charge colors and labels, and reveal the two sides of the interface. [Archival revision comparisons](films/edl-gating/docs/production-notes.md) retain the earlier production history.*
+**A program's window is only its top layer → an MCP server packages the interfaces below it as tools → the model reads the tool list and writes a request → the application sends it → the program does the work → the result returns as text, and the model writes the next request.**
 
-| A production decision | What changed in the film |
-| --- | --- |
-| **Give the camera a physical purpose.** An early 5:40 narration-led version felt like presentation slides. | A new 1–3 minute brief followed one device through 2D → 3D → the microscopic interface, with text and sound supporting its motion. |
-| **Separate overlapping physical regions.** The electrolyte hid the interface and channel. | A front cutaway, interface grid and distinct charge colors made the spatial relationship easier to read. |
-| **Keep clarity while tightening the pace.** Long reading intervals and glare interrupted the explanation. | An 85-second English edition uses matte surfaces, clear front/side contrast, a continuous depth reveal, staggered field arrows and coordinated sound. |
+The model never touches the software. MCP does not give AI control over a program either: control comes from the program's own interfaces, and the protocol standardizes how they are offered, so a program needs one server and every compatible application can use it.
 
-These are decisions from this case, not fixed settings for every animation. Further films can explore other principles, devices and applications.
+## One method, two clocks
 
-## From scientific explanation to editable implementation
+Both films are functions of time: every frame and every sound cue is computed from it, which makes them reproducible and easy to revise. They differ in what sets the clock.
 
-| Frame the science | Direct and review | Implement and render |
-| --- | --- | --- |
-| Distinguish gate control from source–drain transport. Compare the same target charge, and state the limits of the failure-risk argument. | Write a visual brief, inspect frames and sequences, and turn observations about depth, color and timing into specific changes. | Use time-driven Three.js scenes and DOM captions, Puppeteer frame capture, NumPy/SciPy sound synthesis and FFmpeg encoding. |
+| | Electric-double-layer gating | MCP, Explained in Motion |
+|---|---|---|
+| **The clock** | A story timeline mapped onto playback time | Word timestamps from the AI voice |
+| **Best for** | A film carried by motion and on-screen text | A narrated film whose script is still changing |
+| **What a revision costs** | Change the mapping to tighten the pace | Rewrite a line, and every later cue moves |
 
-In the EDL case, **a shared story-to-film timeline keeps captions, camera motion and sound events aligned**. Frames can be generated at chosen times; source and rendering tools are included so the work can be inspected and modified.
+[The shared workflow](workflow.md) · [Narration as the clock](../films/mcp-explained/docs/method.md) · [Adding a case](adding-a-case.md) · [Executed checks](validation.md)
 
-<details>
-<summary><strong>Source, production notes and reproduction details</strong></summary>
+---
 
-- [EDL case and scientific scope](films/edl-gating/README.md)
-- [Creative brief and review excerpts](films/edl-gating/docs/prompts.md)
-- [Production history and revisions](films/edl-gating/docs/production-notes.md)
-- [Rendering instructions](films/edl-gating/docs/rendering.md) and [executed checks](docs/validation.md)
-- [Expanded workflow](docs/workflow.md) and [adding another case](docs/adding-a-case.md)
-- [Four-scene overview](assets/edl-overview.jpg)
-
-The current film has 2,550 frames rendered at native 1080p/30fps. Source, caption timing and release metadata are included; font, browser and encoding differences can affect a new render. The earlier v5 film and its history remain available. Full private conversations and local environments are excluded.
-
-</details>
-
-Code: [MIT](LICENSE) · Original films, audio, images and writing: [CC BY 4.0](LICENSE-MEDIA.md) · [Sources and credits](THIRD_PARTY_NOTICES.md)
+Code: [MIT](../LICENSE) · Original films, audio, images and writing: [CC BY 4.0](legal/LICENSE-MEDIA.md) · [Sources and credits](legal/THIRD_PARTY_NOTICES.md)

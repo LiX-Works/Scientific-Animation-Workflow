@@ -6,6 +6,10 @@ Project code is MIT; original media and written material are CC BY 4.0. Dependen
 
 | Component | Version or role | License and source |
 | --- | --- | --- |
+| Remotion | 4.0.533, MCP film rendering | [Remotion License](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md): free for individuals and small organizations; larger companies need a company license |
+| React | 19.1.0, MCP film scenes | [MIT](https://github.com/facebook/react/blob/main/LICENSE) |
+| Inter Tight, JetBrains Mono | MCP film type, included in the case folder | [SIL OFL 1.1](https://github.com/LiX-Works/Scientific-Animation-Workflow/tree/main/films/mcp-explained/public/fonts) |
+| ElevenLabs | MCP film narration, preset voice "Alice" | Generated under a paid plan; [terms](https://elevenlabs.io/terms-of-use) |
 | Three.js | 0.170.0, scene rendering | [MIT, r170](https://github.com/mrdoob/three.js/blob/r170/LICENSE) |
 | puppeteer-core | 23.11.1, browser capture | [Apache-2.0](https://github.com/puppeteer/puppeteer/blob/puppeteer-core-v23.11.1/LICENSE) |
 | NumPy | Audio synthesis | [BSD-3-Clause](https://numpy.org/doc/stable/license.html) |
@@ -31,4 +35,4 @@ The EDL production handoff identifies these repositories as references. The pinn
 
 Reference repositories are linked rather than bundled. Their licenses are not replaced by this project's licenses. In particular, the MIT notice here does not grant permission to redistribute onetake code commercially. The producer described method inspiration; an absence of identical whole lines is not proof of independent implementation.
 
-Four Bilibili examples were proposed during planning but could not be accessed in the production environment. They are not presented as analyzed sources; the [case reference note](films/edl-gating/docs/references_bilibili.md) preserves that distinction.
+Four Bilibili examples were proposed during planning but could not be accessed in the production environment. They are not presented as analyzed sources.

@@ -1,6 +1,10 @@
 # Verification and release scope
 
-## Current English v6 edition · 2026-10-25
+## MCP, Explained in Motion · 2026-10-30
+
+See the [case rendering notes](../films/mcp-explained/docs/rendering.md). The released file is 137.27 s, 1920×1080, 60 fps, 8,236 frames, about −14 LUFS. From a clean install, `timeline.json`, the audio mix and 11 sampled frames were byte-identical to production. A complete re-render from the clean install was not run.
+
+## Electric-double-layer gating, English v6 edition · 2026-10-25
 
 The selected film was newly rendered in full from the reviewed English source. The author approved the revised picture and sound, then requested one narrow closing-frame correction before final rendering: the purple gate-charge row now spans the full gate.
 

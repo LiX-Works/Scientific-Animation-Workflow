@@ -15,7 +15,7 @@ The project is credited as **Scientific Animation Workflow**. Personal identifyi
 
 The scene, motion, typography and soundtrack are programmatic project material. The retained audio script synthesizes its score and effects with NumPy/SciPy and contains no external audio-file loader or music-model API call. The original handoff and the current English-edition source both identify generated sound without outside samples. This records the production chain; it does not assert exclusive rights over an AI-generated style or every possible generated element.
 
-Original code is offered under MIT; original film, audio content and documentation are offered under CC BY 4.0 to the extent applicable rights exist. Attribute **Scientific Animation Workflow contributors**, identify the material, link to the project and license, and indicate changes. Third-party components retain their own licenses; see the [code license](../../../LICENSE), [media/documentation license](../../../LICENSE-MEDIA.md) and [third-party notices](../../../THIRD_PARTY_NOTICES.md).
+Original code is offered under MIT; original film, audio content and documentation are offered under CC BY 4.0 to the extent applicable rights exist. Attribute **Scientific Animation Workflow contributors**, identify the material, link to the project and license, and indicate changes. Third-party components retain their own licenses; see the [code license](../../../LICENSE), [media/documentation license](../../../docs/legal/LICENSE-MEDIA.md) and [third-party notices](../../../docs/legal/THIRD_PARTY_NOTICES.md).
 
 ## Method references
 
@@ -30,7 +30,7 @@ The handoff records the following repositories and snapshots. These credits dist
 
 The producer reported no whole-line matches between selected reference material and the film's main scene, audio and rendering scripts. Line matching is **not** a complete originality or license audit. No reference repository, its full prompt collection or its toolchain is bundled here; adding their code requires checking the relevant terms.
 
-Four Bilibili videos were proposed as aesthetic references, but the production record reports failed retrieval and no viewing or audiovisual analysis. They appear separately in [the reference-access record](references_bilibili.md).
+Four Bilibili videos were proposed as aesthetic references, but the production record reports failed retrieval and no viewing or audiovisual analysis, so they are not sources for this film.
 
 ## Scientific background
 
@@ -43,4 +43,4 @@ These are contextual citations verified from publisher abstracts, not copied fig
 
 ## Software and typography
 
-The stack comprises Three.js, Puppeteer/Chrome, FFmpeg, Python, NumPy and SciPy. The current English graphics prioritize DejaVu Sans, DejaVu Serif and DejaVu Sans Mono; Noto CJK families remain as fallbacks inherited from the original Chinese source. Font binaries, browser installations and dependency environments are not bundled as project assets. Refer to the [rendering instructions](rendering.md) and [third-party notices](../../../THIRD_PARTY_NOTICES.md) for their separate terms.
+The stack comprises Three.js, Puppeteer/Chrome, FFmpeg, Python, NumPy and SciPy. The current English graphics prioritize DejaVu Sans, DejaVu Serif and DejaVu Sans Mono; Noto CJK families remain as fallbacks inherited from the original Chinese source. Font binaries, browser installations and dependency environments are not bundled as project assets. Refer to the [rendering instructions](rendering.md) and [third-party notices](../../../docs/legal/THIRD_PARTY_NOTICES.md) for their separate terms.

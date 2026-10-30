@@ -5,13 +5,13 @@
 **/*.pyc
 **/frames/
 **/output/
+**/out/
+**/build/
 **/audio/mix*.wav
 **/*.mp4
 **/*.wav
 **/*.log
 **/pass*-progress.txt
-dist/
-gallery/media/
 
 # Machine-local configuration
 .env

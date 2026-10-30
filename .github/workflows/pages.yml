@@ -6,16 +6,12 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/pages.yml'
-      - 'README*.md'
-      - 'gallery/**'
-      - 'assets/**'
+      - 'site/**'
       - 'docs/**'
       - 'films/**/README*.md'
       - 'films/**/docs/**'
-      - 'films/edl-gating/release.json'
-      - 'tools/prepare-gallery.py'
-      - 'tools/build-subtitles.py'
-      - 'tools/requirements.txt'
+      - 'films/**/assets/**'
+      - 'films/**/release.json'
 
 permissions:
   contents: read
@@ -43,9 +39,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install documentation renderer
-        run: python -m pip install -r tools/requirements.txt
+        run: python -m pip install -r site/tools/requirements.txt
       - name: Build current optional English captions
-        run: python tools/build-subtitles.py
+        run: python site/tools/build-subtitles.py
       - name: Read selected release
         id: release
         run: |
@@ -86,14 +82,30 @@ jobs:
               actual = hashlib.sha256(path.read_bytes()).hexdigest()
               if actual != checksums.get(name):
                   raise SystemExit(f'Checksum mismatch or missing entry: {name}')
-          if (media / release['subtitles']['english']).read_bytes() != Path('gallery/edl-gating.en.vtt').read_bytes():
+          if (media / release['subtitles']['english']).read_bytes() != Path('site/gallery/edl-gating.en.vtt').read_bytes():
               raise SystemExit('Published captions do not match the current film source')
           print('Both selected release assets match SHA256SUMS.txt; captions match the current source.')
           PY
+      - name: Download and verify the MCP film
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/media-mcp"
+          python - <<'PY' > "$RUNNER_TEMP/mcp.txt"
+          import json
+          from pathlib import Path
+          release = json.loads(Path('films/mcp-explained/release.json').read_text())
+          print(release['tag'], release['web_video']['filename'], release['web_video']['sha256'])
+          PY
+          read -r TAG FILE SHA < "$RUNNER_TEMP/mcp.txt"
+          gh release download "$TAG" --pattern "$FILE" --dir "$RUNNER_TEMP/media-mcp"
+          echo "$SHA  $RUNNER_TEMP/media-mcp/$FILE" | sha256sum -c -
+          echo "MCP_VIDEO=$RUNNER_TEMP/media-mcp/$FILE" >> "$GITHUB_ENV"
       - name: Build static viewing site and verify approved video
         env:
           VIDEO_ASSET: ${{ steps.release.outputs.video }}
-        run: python tools/prepare-gallery.py --video "$RUNNER_TEMP/media/$VIDEO_ASSET" --out "$RUNNER_TEMP/site"
+        run: python site/tools/prepare-gallery.py --video "$RUNNER_TEMP/media/$VIDEO_ASSET" --extra-video "$MCP_VIDEO" --out "$RUNNER_TEMP/site"
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload static site

@@ -22,6 +22,6 @@ The 3D reveal begins at **10.0 s**, with its main audio accent at **13.65 s**. T
 
 The source retains a **0–102 story coordinate** for scene actions. `src/timeline.json` exports the current story-to-playback mapping and its 85-second duration. The visual implementation also retains an internal 87-second staging clock, wrapped by an editorial adjustment. Render using **playback seconds** through `window.render(t)` and `window.DUR`; neither 102 nor 87 is the output duration.
 
-The original v5 edition ran for 146.1 seconds with Chinese graphics and a 104 BPM score. Those figures belong to the [production history](production-notes.md#version-chronology), not the current render plan.
+The original v5 edition ran for 146.1 seconds with Chinese graphics and a 104 BPM score. Those figures do not apply to the current render plan.
 
 See [rendering](rendering.md), [sound design](sound_cues.md) and [scientific scope](scientific-scope.md).

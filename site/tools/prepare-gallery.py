@@ -8,21 +8,26 @@ from pathlib import Path
 import re
 import shutil
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
+SITE = ROOT / 'site'
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--video', required=True, type=Path, help='The MP4 selected by films/edl-gating/release.json')
+    parser.add_argument('--extra-video', action='append', default=[], type=Path, help="Another film's verified MP4, placed in gallery/media")
     parser.add_argument('--out', required=True, type=Path, help='New, empty staging directory')
     args = parser.parse_args()
     try:
         import markdown
     except ImportError:
-        parser.error('Install tools/requirements.txt in your Python environment first.')
+        parser.error('Install site/tools/requirements.txt in your Python environment first.')
     video, output = args.video.resolve(), args.out.resolve()
     if not video.is_file() or video.suffix.lower() != '.mp4':
         parser.error('--video must be an existing MP4 file')
+    for extra in args.extra_video:
+        if not extra.is_file() or extra.suffix.lower() != '.mp4':
+            parser.error('--extra-video must be an existing MP4 file')
     if output == ROOT or ROOT in output.parents:
         parser.error('Use a staging directory outside the source repository')
     if output.exists() and not output.is_dir():
@@ -43,21 +48,30 @@ def main():
     if video.stat().st_size != selected['bytes'] or digest != selected['sha256']:
         parser.error('MP4 size or SHA-256 does not match the selected release; nothing was staged')
     output.mkdir(parents=True, exist_ok=True)
-    for folder in ['gallery', 'assets', 'LICENSES']:
-        shutil.copytree(ROOT / folder, output / folder, ignore=shutil.ignore_patterns('media', '__pycache__', '.DS_Store', 'Thumbs.db'))
+    ignore = shutil.ignore_patterns('media', '__pycache__', '.DS_Store', 'Thumbs.db')
+    # The published layout stays gallery/ and assets/ at the top, so existing public addresses do not change.
+    for folder in ['gallery', 'assets']:
+        shutil.copytree(SITE / folder, output / folder, ignore=ignore)
+    shutil.copytree(ROOT / 'docs/legal/LICENSES', output / 'docs/legal/LICENSES', ignore=ignore)
     (output / 'gallery/media').mkdir(exist_ok=True)
     shutil.copy2(video, output / 'gallery/media' / filename)
+    for extra in args.extra_video:
+        shutil.copy2(extra, output / 'gallery/media' / extra.name)
     staged_release = output / 'films/edl-gating/release.json'
     staged_release.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(release_path, staged_release)
-    for name in ['LICENSE', 'LICENSE-MEDIA.md', 'THIRD_PARTY_NOTICES.md']:
-        shutil.copy2(ROOT / name, output / name)
+    shutil.copy2(ROOT / 'LICENSE', output / 'LICENSE')
     # Only documented public prose roots; never walk a film's local environment.
-    sources = list(ROOT.glob('*.md')) + list((ROOT / 'docs').rglob('*.md'))
+    sources = list((ROOT / 'docs').rglob('*.md'))
     for case in (ROOT / 'films').iterdir():
         if case.is_dir():
             sources.extend(case.glob('README*.md'))
             sources.extend((case / 'docs').rglob('*.md'))
+            if (case / 'release.json').is_file():
+                (output / 'films' / case.name).mkdir(parents=True, exist_ok=True)
+                shutil.copy2(case / 'release.json', output / 'films' / case.name / 'release.json')
+            if (case / 'assets').is_dir():
+                shutil.copytree(case / 'assets', output / 'films' / case.name / 'assets', dirs_exist_ok=True)
     for source in sources:
         target = output / source.relative_to(ROOT).with_suffix('.html')
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -69,6 +83,7 @@ def main():
                 return match.group(0)
             return 'href="' + re.sub(r'\.md(?=[#?]|$)', '.html', value) + '"'
         body = re.sub(r'href="([^"]+)"', local_markdown_link, body)
+        body = body.replace('site/assets/', 'assets/')
         title = next((line.lstrip('# ').strip() for line in text.splitlines() if line.startswith('# ')), source.stem)
         relative_gallery = Path(os.path.relpath(output / 'gallery/index.html', target.parent)).as_posix()
         language = 'zh-CN' if re.search(r'(?:^|[._-])zh(?:[._-]|$)', source.stem, re.I) else 'en'

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import re
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 FILM = ROOT / 'films/edl-gating'
 
 
@@ -25,7 +25,7 @@ def stamp(seconds):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--out', type=Path, default=ROOT / 'gallery/edl-gating.en.vtt')
+    parser.add_argument('--out', type=Path, default=ROOT / 'site/gallery/edl-gating.en.vtt')
     args = parser.parse_args()
     timeline = json.loads((FILM / 'src/timeline.json').read_text(encoding='utf-8'))
     source = (FILM / 'src/film.js').read_text(encoding='utf-8')

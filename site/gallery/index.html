@@ -3,26 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Scientific animations, source code, and the decisions behind an AI-assisted production workflow.">
+  <meta name="description" content="Code-driven films that explain how something works, with their source and method.">
   <title>Scientific Animation Workflow</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-nav">
     <a class="wordmark" href="#top"><span class="mark" aria-hidden="true">S<span>↗</span></span><span>Scientific Animation<br><strong>Workflow</strong></span></a>
-    <nav aria-label="Main navigation"><a href="#film" data-i18n="navFilm">Film</a><a href="#process" data-i18n="navProcess">Process</a><a href="../README.md" data-i18n="navSource">Source & docs</a></nav>
+    <nav aria-label="Main navigation"><a href="#film" data-i18n="navFilm">Films</a><a href="#process" data-i18n="navProcess">Method</a><a href="../docs/README.md" data-i18n="navSource">Source & docs</a></nav>
     <button id="language" type="button" aria-label="Switch language to Chinese">中文</button>
   </header>
   <main id="top">
     <section class="intro wrap">
-      <div class="eyebrow" data-i18n="eyebrow">SCIENTIFIC EXPLANATION / CREATIVE PRACTICE</div>
-      <h1 data-i18n="title">An AI-Assisted Workflow for Creating Scientific Animations</h1>
-      <p class="lede" data-i18n="intro">From scientific concepts to animated explanations. Finished films, editable source, and the decisions that connect them.</p>
-      <div class="actions"><a class="button primary" href="#film" data-i18n="watch">Watch the first film <span aria-hidden="true">↗</span></a><a class="text-link" href="../docs/workflow.md" data-i18n="readMethod">Explore the workflow →</a></div>
+      <div class="eyebrow" data-i18n="eyebrow">DEVICE PHYSICS / AI TOOLS / CODE-DRIVEN FILM</div>
+      <h1 data-i18n="title">Films that explain how something works</h1>
+      <p class="lede" data-i18n="intro">Each film takes one mechanism, states what it does and does not claim, and explores one production technique. Film, source and method are published together.</p>
+      <div class="actions"><a class="button primary" href="#film" data-i18n="watch">Watch the films <span aria-hidden="true">↗</span></a><a class="text-link" href="../docs/workflow.md" data-i18n="readMethod">Explore the workflow →</a></div>
       <ol class="method-strip" aria-label="Production overview">
-        <li><span>01</span><div><h2 data-i18n="step1">Frame the science</h2><p data-i18n="step1p">Define the mechanism, the audience, and the limits.</p></div></li>
-        <li><span>02</span><div><h2 data-i18n="step2">Direct and review</h2><p data-i18n="step2p">Develop the visual brief. Judge concrete frames and sequences.</p></div></li>
-        <li><span>03</span><div><h2 data-i18n="step3">Render and share</h2><p data-i18n="step3p">Connect scene, sound, and time. Keep the work editable.</p></div></li>
+        <li><span>01</span><div><h2 data-i18n="step1">Mechanism and limits</h2><p data-i18n="step1p">Write the causal chain, and the conditions under which it holds.</p></div></li>
+        <li><span>02</span><div><h2 data-i18n="step2">Pictures that carry the argument</h2><p data-i18n="step2p">Every effect marks something that is actually happening.</p></div></li>
+        <li><span>03</span><div><h2 data-i18n="step3">Time as the only input</h2><p data-i18n="step3p">Every frame and sound cue is computed from it, so the film stays reproducible and easy to revise.</p></div></li>
       </ol>
     </section>
     <section class="film-section" id="film">
@@ -31,20 +31,30 @@
         <div class="case-title"><h2 data-i18n="filmTitle">Electric-double-layer gating</h2><p data-i18n="filmQuestion">The same change in channel charge.<br>A lower gate voltage. Why?</p></div>
         <div class="video-shell"><video id="film-player" controls playsinline preload="metadata" poster="../assets/edl-interface.jpg"><source src="media/edl-gating-v6.mp4" type="video/mp4"><track kind="subtitles" src="edl-gating.en.vtt" srclang="en" label="English captions"><p data-i18n="videoFallback">Your browser does not support this video. Use the download below.</p></video></div>
         <div class="film-footer"><p data-i18n="languageNote">English graphics · Optional English captions · Music & sound effects, no narration</p><a class="download" href="media/edl-gating-v6.mp4" download="edl-gating-v6.mp4" data-i18n="download">Download MP4 · 111.88 MB ↓</a></div>
-        <div class="case-details"><p data-i18n="caseDescription">A continuous journey from a transistor cross-section into a three-dimensional device and its microscopic interface. The comparison connects effective gate capacitance to the voltage needed for a common target charge.</p><aside data-i18n="caseScope">An explanatory animation. Geometry, fields, and particle motion are illustrative; this is not a numerical device simulation.</aside></div>
-        <div class="case-links"><a href="../films/edl-gating/README.md" data-i18n="caseRead">Read the case ↗</a><a href="../films/edl-gating/docs/production-notes.md" data-i18n="caseRevisions">Follow the revisions ↗</a><a href="../films/edl-gating/docs/rendering.md" data-i18n="caseRender">Reproduce the film ↗</a></div>
+        <div class="case-details"><p data-i18n="caseDescription">One device, followed from a transistor cross-section into its 3D electrolyte interface and back. With the target charge held fixed, the comparison isolates gate coupling.</p><aside data-i18n="caseScope">An explanatory animation of established physics. Geometry, fields and particle motion are illustrative. A low external voltage can still mean a strong local field.</aside></div>
+        <div class="case-links"><a href="../films/edl-gating/README.md" data-i18n="caseRead">Read the case ↗</a><a href="../films/edl-gating/docs/scientific-scope.md" data-i18n="caseLimits">Scientific scope ↗</a><a href="../films/edl-gating/docs/rendering.md" data-i18n="caseRender">Reproduce the film ↗</a></div>
+      </div>
+    </section>
+    <section class="film-section" id="mcp">
+      <div class="wrap">
+        <div class="section-heading"><span class="eyebrow" data-i18n="case2Label">CASE 02 / AI TOOLS</span><span class="meta">02:17 · 1080p · 60 fps</span></div>
+        <div class="case-title"><h2 data-i18n="case2Title">MCP, Explained in Motion</h2><p data-i18n="case2Question">An AI model can only write text.<br>How does it operate a program?</p></div>
+        <div class="video-shell"><video controls playsinline preload="metadata" poster="../films/mcp-explained/assets/mcp-layers.jpg"><source src="media/mcp-explained-v1-web.mp4" type="video/mp4"><p data-i18n="videoFallback">Your browser does not support this video. Use the download below.</p></video></div>
+        <div class="film-footer"><p data-i18n="case2Language">English captions · AI voice by ElevenLabs · Built with Claude Code and Remotion</p><a class="download-mcp" href="https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/mcp-v1/mcp-explained-v1.mp4" data-i18n="case2Download">Download full quality · 143.13 MB ↓</a></div>
+        <div class="case-details"><p data-i18n="case2Description">One request, followed from a program's window down through its layers and back. The model never touches the software: it reads text and writes text. Control comes from the program's own interfaces, which MCP packages as tools.</p><aside data-i18n="case2Scope">An explanatory film. The layer stack is schematic, and tool names, papers and errors are illustrative. Protocol steps were checked against MCP revision 2026-07-28.</aside></div>
+        <div class="case-links"><a href="../films/mcp-explained/README.md" data-i18n="caseRead">Read the case ↗</a><a href="../films/mcp-explained/docs/method.md" data-i18n="case2Method">The method ↗</a><a href="../films/mcp-explained/docs/scope.md" data-i18n="case2Limits">Accuracy and limits ↗</a></div>
       </div>
     </section>
     <section class="wrap process" id="process">
-      <div class="eyebrow" data-i18n="processLabel">BEHIND THE FILM</div>
-      <h2 data-i18n="processTitle">The choices behind the images</h2>
-      <div class="editorial-row"><img src="../assets/edl-comparison.jpg" alt="Two devices compared at the same target channel charge" loading="lazy"><div><span class="number">01 / SCIENCE</span><h3 data-i18n="scienceTitle">Give the comparison a clear meaning</h3><p data-i18n="scienceText">Compare the voltage needed for the same change in charge. Keep low external voltage distinct from weak local fields, and gate-related stress distinct from source–drain failure.</p><a href="../films/edl-gating/docs/scientific-scope.md" data-i18n="scienceLink">Scientific scope →</a></div></div>
-      <div class="editorial-row reverse"><img src="../assets/edl-device.jpg" alt="Channel electrons and gate charge in a transistor cross-section" loading="lazy"><div><span class="number">02 / DIRECTION</span><h3 data-i18n="directionTitle">Turn review into specific changes</h3><p data-i18n="directionText">Move beyond “make it better.” Review color separation, occlusion, materials, reading time, and the continuity of motion. Each revision should answer an observable problem.</p><a href="../films/edl-gating/docs/prompts.md" data-i18n="directionLink">Creative inputs and review →</a></div></div>
-      <div class="editorial-row"><img src="../assets/edl-breakdown.jpg" alt="An illustrative breakdown path through a stressed gate dielectric" loading="lazy"><div><span class="number">03 / IMPLEMENTATION</span><h3 data-i18n="implementationTitle">Keep scene, sound, and time connected</h3><p data-i18n="implementationText">The EDL case uses time-driven Three.js scenes, readable DOM text, event-based sound synthesis, and frame-by-frame browser capture. Source and instructions make the result open to modification.</p><a href="../docs/workflow.md" data-i18n="implementationLink">Production workflow →</a></div></div>
+      <div class="eyebrow" data-i18n="processLabel">BEHIND THE FILMS</div>
+      <h2 data-i18n="processTitle">The reasoning behind the images</h2>
+      <div class="editorial-row"><img src="../assets/edl-comparison.jpg" alt="Two devices compared at the same target channel charge" loading="lazy"><div><span class="number">01 / PHYSICS</span><h3 data-i18n="scienceTitle">Give the comparison a clear meaning</h3><p data-i18n="scienceText">Compare the voltage needed for the same change in charge. Keep low external voltage distinct from weak local fields, and gate-related stress distinct from source–drain failure.</p><a href="../films/edl-gating/docs/scientific-scope.md" data-i18n="scienceLink">Scientific scope →</a></div></div>
+      <div class="editorial-row reverse"><img src="../films/mcp-explained/assets/mcp-layers.jpg" alt="A program's window lifted above its interfaces, commands and core engine, with an MCP server attached" loading="lazy"><div><span class="number">02 / SOFTWARE</span><h3 data-i18n="directionTitle">Separate the mechanism from the standard</h3><p data-i18n="directionText">Control comes from a program's own interfaces and the code wrapped around them. MCP standardizes how that capability is offered. The film shows the layers first, and states the value of a standard once the loop is clear.</p><a href="../films/mcp-explained/README.md" data-i18n="directionLink">What MCP is, and is not →</a></div></div>
+      <div class="editorial-row"><img src="../films/mcp-explained/assets/mcp-model-writes.jpg" alt="The model's transcript, with its requests, results and an error" loading="lazy"><div><span class="number">03 / TECHNIQUE</span><h3 data-i18n="implementationTitle">One clock for picture and sound</h3><p data-i18n="implementationText">The EDL film runs on a story timeline mapped to playback time. The MCP film runs on word timestamps from its AI voice, so rewriting a line moves every later cue. Either way, picture and sound read the same events.</p><a href="../docs/workflow.md" data-i18n="implementationLink">The shared workflow →</a></div></div>
     </section>
-    <section class="wrap next-section"><div><span class="eyebrow" data-i18n="collectionLabel">AN EVOLVING COLLECTION</span><h2 data-i18n="collectionTitle">One case to begin.<br>Room for other questions.</h2></div><p data-i18n="collectionText">Future films can explore different scientific principles, devices, and applications. Each case keeps its own implementation and production notes; shared methods grow from the work.</p><a class="button secondary" href="../docs/adding-a-case.md" data-i18n="collectionLink">Case structure →</a></section>
+    <section class="wrap next-section"><div><span class="eyebrow" data-i18n="collectionLabel">AN EVOLVING COLLECTION</span><h2 data-i18n="collectionTitle">Two cases so far.<br>Room for other questions.</h2></div><p data-i18n="collectionText">Each case keeps its own implementation and limits. Future films can explore other principles, devices and tools, each with one technique of its own.</p><a class="button secondary" href="../docs/adding-a-case.md" data-i18n="collectionLink">Case structure →</a></section>
   </main>
-  <footer class="wrap footer"><span>Scientific Animation Workflow</span><p data-i18n="credit">Scientific Animation Workflow contributors · Code: MIT · Original media and writing: CC BY 4.0</p><a href="../THIRD_PARTY_NOTICES.md" data-i18n="creditsLink">Sources & credits</a></footer>
+  <footer class="wrap footer"><span>Scientific Animation Workflow</span><p data-i18n="credit">Scientific Animation Workflow contributors · Code: MIT · Original media and writing: CC BY 4.0</p><a href="../docs/legal/THIRD_PARTY_NOTICES.md" data-i18n="creditsLink">Sources & credits</a></footer>
   <script src="site.js"></script>
 </body>
 </html>
