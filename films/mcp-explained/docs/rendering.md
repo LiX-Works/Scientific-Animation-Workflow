@@ -26,6 +26,14 @@ Synthesize the score and mix it with the voice. This prints the voice-over-music
 npm run mix
 ```
 
+The mixer applies short, sample-preserving edge repairs to the included voice takes and two music splices. Parameters live in `scripts/audio-repairs.mjs`; they belong to these takes and should be reviewed if narration is regenerated. Word timing, sentence starts, mix gains and score cues remain unchanged. To write a comparison mix without replacing `public/mix.wav`:
+
+```bash
+node scripts/mix.mjs --output out/mix-review.wav
+```
+
+Use `--no-repair` to reproduce the original mix for comparison. Signal measurements complement listening; they do not certify pronunciation or sound quality.
+
 Bundle the film:
 
 ```bash
@@ -56,3 +64,5 @@ From a clean install of this folder:
 | 11 frames across the film, at half scale, compared with the production source | Byte-identical JPEGs on the same machine |
 
 The released film itself was checked for duration (137.27 s), frame count (8,236), stream format and loudness (about -14 LUFS). A complete re-render from the clean install was not run. Fonts, browser versions and encoders can change a new render.
+
+The audio revision keeps both released video streams unchanged (`-c:v copy`). Duration and video packet timestamps are preserved; original and revised compressed video SHA-256 values match. The mix measures approximately −14.3 LUFS, with unchanged gain and ducking settings.

@@ -11,7 +11,7 @@ Each film has a GitHub Release, and each case's `release.json` records its size 
 | Film | Release | File |
 |---|---|---|
 | Electric-double-layer gating | [edl-v6](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/edl-v6) | `edl-gating-v6.mp4`, 85.000 s, 1920×1080, 30 fps, 111,879,725 bytes |
-| MCP, Explained in Motion | [mcp-v1](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/mcp-v1) | `mcp-explained-v1.mp4`, 137.27 s, 1920×1080, 60 fps, 143,133,462 bytes; `mcp-explained-v1-web.mp4` for the gallery |
+| MCP, Explained in Motion | [mcp-v1.0.1](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/mcp-v1.0.1) | `mcp-explained-v1.0.1.mp4`, 137.27 s, 1920×1080, 60 fps, 143,610,126 bytes; `mcp-explained-v1.0.1-web.mp4` for the gallery |
 
 The earlier [edl-v5 Release](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/tag/edl-v5) keeps the longer Chinese edition. Publish a Release before the deployment that consumes it.
 
@@ -21,7 +21,7 @@ The earlier [edl-v5 Release](https://github.com/LiX-Works/Scientific-Animation-W
 
 ```sh
 python -m pip install -r site/tools/requirements.txt
-python site/tools/prepare-gallery.py --video /path/to/edl-gating-v6.mp4 --extra-video /path/to/mcp-explained-v1-web.mp4 --out /path/to/new-site-directory
+python site/tools/prepare-gallery.py --video /path/to/edl-gating-v6.mp4 --extra-video /path/to/mcp-explained-v1.0.1-web.mp4 --out /path/to/new-site-directory
 ```
 
 The helper verifies the main video against its release metadata, copies the videos, renders public Markdown into HTML and preserves relative links. It refuses a nonempty output directory. Serve the result with HTTP byte-range support so that seeking works.

@@ -8,7 +8,7 @@ This 2:17 film follows one request from an application's window, down through th
 
 **2:17 · 1080p / 60 fps · English captions · AI voice by ElevenLabs · Built with Claude Code and Remotion**
 
-[Watch the film](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#mcp) · [Download 1080p MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/mcp-v1/mcp-explained-v1.mp4) · [The method](docs/method.md)
+[Watch the film](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#mcp) · [Download 1080p MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/mcp-v1.0.1/mcp-explained-v1.0.1.mp4) · [The method](docs/method.md)
 
 ## The mechanism
 

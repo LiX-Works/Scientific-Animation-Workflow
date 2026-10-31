@@ -17,7 +17,7 @@ const translations = {
   case2Label: '案例 02 / AI 工具', case2Title: 'MCP, Explained in Motion',
   case2Question: 'AI 模型只能写文字，它怎么操作一个程序？',
   case2Language: '英文字幕 · ElevenLabs AI 配音 · 使用 Claude Code 和 Remotion 制作',
-  case2Download: '下载高清版 · 143.13 MB ↓',
+  case2Download: '下载高清版 · 143.61 MB ↓',
   case2Description: '跟着一次请求，从程序窗口穿过它的几层再回来。模型始终碰不到软件：它只读文字、写文字。控制来自程序自身的接口，MCP 把这些接口包装成工具。',
   case2Scope: '解释性影片。分层是示意，工具名、论文和报错都是举例。协议步骤已对照 MCP 2026-07-28 版规范核对。',
   case2Method: '制作方法 ↗', case2Limits: '准确性与局限 ↗',

@@ -33,7 +33,7 @@ The film holds the target charge change fixed, so the gate voltage is the only q
 
 ## MCP, Explained in Motion
 
-**[▶ Watch](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#mcp) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/mcp-v1/mcp-explained-v1.mp4) · [Read the case](../films/mcp-explained/README.md)**
+**[▶ Watch](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#mcp) · [Download MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/mcp-v1.0.1/mcp-explained-v1.0.1.mp4) · [Read the case](../films/mcp-explained/README.md)**
 
 **A program's window is only its top layer → an MCP server packages the interfaces below it as tools → the model reads the tool list and writes a request → the application sends it → the program does the work → the result returns as text, and the model writes the next request.**
 

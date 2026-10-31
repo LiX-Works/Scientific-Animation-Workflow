@@ -33,7 +33,7 @@
 
 ## MCP, Explained in Motion
 
-**[▶ 观看](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#mcp) · [下载 MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/mcp-v1/mcp-explained-v1.mp4) · [阅读案例](../films/mcp-explained/README.md)**
+**[▶ 观看](https://lix-works.github.io/Scientific-Animation-Workflow/gallery/index.html#mcp) · [下载 MP4](https://github.com/LiX-Works/Scientific-Animation-Workflow/releases/download/mcp-v1.0.1/mcp-explained-v1.0.1.mp4) · [阅读案例](../films/mcp-explained/README.md)**
 
 **程序窗口只是最上面一层 → MCP 服务器把下面的接口包装成工具 → 模型读工具清单，写出请求 → 应用把请求发出去 → 程序完成工作 → 结果以文字返回，模型据此写下一个请求。**
 

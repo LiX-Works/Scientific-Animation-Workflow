@@ -1,7 +1,21 @@
-// The soundtrack: a score and sound effects synthesized here, cued to the story events, under the narration. Writes public/mix.wav.
+// The soundtrack: score and sound effects cued to story events, under the narration.
+// Use --output <wav> to keep the existing public/mix.wav; --no-repair reproduces the original mix.
 import {execFileSync} from 'node:child_process';
-import {readFileSync, writeFileSync} from 'node:fs';
+import {mkdirSync, readFileSync, writeFileSync} from 'node:fs';
+import {dirname} from 'node:path';
 import {buildEvents, hops} from '../src/film/events.mjs';
+import {repairVoiceSegment, musicSpliceGain, TAIL_MUTE_SECONDS, HEAD_FADE_SECONDS, TAIL_FADE_SECONDS} from './audio-repairs.mjs';
+
+const args = process.argv.slice(2);
+const option = (name, fallback) => {
+  const i = args.indexOf(name);
+  if (i < 0) return fallback;
+  if (!args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`Missing value for ${name}`);
+  return args[i + 1];
+};
+const outputPath = option('--output', 'public/mix.wav');
+const diagnosticsDir = option('--diagnostics-dir', null);
+const audioFix = !args.includes('--no-repair');
 
 const tl = JSON.parse(readFileSync('src/film/timeline.json', 'utf8'));
 const E = buildEvents(tl), HOP = hops(E);
@@ -177,16 +191,29 @@ const wetL = reverb(RL, [1557, 1617, 1491, 1422]), wetR = reverb(RR, [1580, 1640
 for (let i = 0; i < N; i++) { L[i] += wetL[i] * 0.55; R[i] += wetR[i] * 0.55; }
 for (let i = sf(E.snap2 - 5), e = sf(E.snap2); i < e; i++) { L[i] = 0; R[i] = 0; }
 
-const voice = new Float32Array(N);
+// Retain the original voice for gain measurement and ducking so local repairs do not rebalance the film.
+const voice = new Float32Array(N), mixVoice = new Float32Array(N), repairLog = [];
 for (const s of tl.segments) {
   const raw = execFileSync('ffmpeg', ['-v', 'error', '-i', `public/vo/${s.id}.mp3`, '-f', 'f32le', '-ac', '1', '-ar', String(SR), 'pipe:1'], {maxBuffer: 1 << 28});
   const pcm = new Float32Array(raw.buffer, raw.byteOffset, Math.floor(raw.length / 4)), at = Math.round(s.at * SR);
   for (let i = 0; i < pcm.length && at + i < N; i++) voice[at + i] += pcm[i];
+  const repaired = audioFix ? repairVoiceSegment(pcm, s.id, SR) : pcm;
+  for (let i = 0; i < repaired.length && at + i < N; i++) mixVoice[at + i] += repaired[i];
+  repairLog.push({id: s.id, at: s.at, startSample: at, inputSamples: pcm.length, outputSamples: repaired.length,
+    headFadeSamples: audioFix ? Math.round((HEAD_FADE_SECONDS[s.id] || 0) * SR) : 0,
+    tailMuteSamples: audioFix ? Math.round((TAIL_MUTE_SECONDS[s.id] || 0) * SR) : 0,
+    tailFadeSamples: audioFix && TAIL_MUTE_SECONDS[s.id] ? Math.round(TAIL_FADE_SECONDS * SR) : 0});
 }
 // the music stem is set by loudness; it dips about 7 dB while someone is speaking
 let mp = 0, vp = 0, vn = 0;
 for (let i = 0; i < N; i++) { mp += L[i] * L[i] + R[i] * R[i]; if (Math.abs(voice[i]) > 0.01) { vp += voice[i] * voice[i]; vn++; } }
 const musicGain = Math.pow(10, -17 / 20) / Math.sqrt(mp / (2 * N)), voiceGain = Math.pow(10, -15 / 20) / Math.sqrt(vp / vn);
+const cutStart = sf(E.snap2 - 5), cutEnd = sf(E.snap2);
+if (diagnosticsDir) {
+  mkdirSync(diagnosticsDir, {recursive: true});
+  writeFileSync(`${diagnosticsDir}/mix-diagnostics.json`, JSON.stringify({SR, N, musicGain, voiceGain, audioFix, cutStart, cutEnd, repairLog}, null, 2));
+  writeFileSync(`${diagnosticsDir}/repaired-voice.f32`, Buffer.from(mixVoice.buffer));
+}
 let env = 0;
 const out = Buffer.alloc(44 + N * 4);
 out.write('RIFF', 0); out.writeUInt32LE(36 + N * 4, 4); out.write('WAVEfmt ', 8); out.writeUInt32LE(16, 16); out.writeUInt16LE(1, 20); out.writeUInt16LE(2, 22);
@@ -200,7 +227,8 @@ let ci = 0;
 for (let i = 0; i < N; i++) {
   const a = Math.abs(voice[i]) * voiceGain; env = a > env ? a + (env - a) * 0.995 : a + (env - a) * 0.99995;
   const duck = 1 - 0.55 * Math.min(1, env * 7);
-  const vv = voice[i] * voiceGain, mm = (L[i] + R[i]) * 0.5 * musicGain * duck;
+  const splice = audioFix ? musicSpliceGain(i, cutStart, cutEnd, SR) : 1;
+  const vv = mixVoice[i] * voiceGain, mm = (L[i] + R[i]) * 0.5 * musicGain * duck * splice;
   hv = HP * (hv + vv - pv); pv = vv; hm = HP * (hm + mm - pm); pm = mm;
   while (ci < clarity.length - 1 && i > clarity[ci].b) ci++;
   const cl = clarity[ci];
@@ -209,11 +237,12 @@ for (let i = 0; i < N; i++) {
     if (cl.wn === 6615) { if (cl.wv > 1e-5) cl.worst = Math.min(cl.worst, 10 * Math.log10(cl.wv / Math.max(cl.wm, 1e-9))); cl.wv = 0; cl.wm = 0; cl.wn = 0; }
   }
   const fade = Math.min(1, (N - i) / (1.2 * SR));
-  const l = Math.tanh((L[i] * musicGain * duck + voice[i] * voiceGain) * 1.0) * 0.96 * fade, r = Math.tanh((R[i] * musicGain * duck + voice[i] * voiceGain) * 1.0) * 0.96 * fade;
+  const l = Math.tanh((L[i] * musicGain * duck * splice + vv) * 1.0) * 0.96 * fade, r = Math.tanh((R[i] * musicGain * duck * splice + vv) * 1.0) * 0.96 * fade;
   pk = Math.max(pk, Math.abs(l), Math.abs(r)); rms += l * l + r * r;
   out.writeInt16LE(Math.round(l * 32767), 44 + i * 4); out.writeInt16LE(Math.round(r * 32767), 46 + i * 4);
 }
-writeFileSync('public/mix.wav', out);
+mkdirSync(dirname(outputPath), {recursive: true});
+writeFileSync(outputPath, out);
 console.log('seconds', (N / SR).toFixed(1), 'peak', pk.toFixed(2), 'rms dB', (10 * Math.log10(rms / (2 * N))).toFixed(1));
 console.log('voice over music above 1 kHz, dB (whole line / worst 150 ms):');
 console.log(clarity.map((c) => `${c.id} ${(10 * Math.log10(c.v / Math.max(c.m, 1e-9))).toFixed(0)}/${c.worst.toFixed(0)}`).join('  '));

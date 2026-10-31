@@ -1,27 +1,27 @@
 {
   "schema_version": 1,
-  "tag": "mcp-v1",
+  "tag": "mcp-v1.0.1",
   "title": "MCP, Explained in Motion",
   "edition": "English narrated edition",
-  "date": "2026-10-30",
+  "date": "2026-10-31",
   "repository": "LiX-Works/Scientific-Animation-Workflow",
   "video": {
-    "filename": "mcp-explained-v1.mp4",
+    "filename": "mcp-explained-v1.0.1.mp4",
     "duration_seconds": 137.267,
     "width": 1920,
     "height": 1080,
     "fps": 60,
     "frames": 8236,
-    "bytes": 143133462,
-    "sha256": "382f146ebdf894f3f09708c8c104fec75deed1d27a3c33dd023bd2ef388a1f01",
+    "bytes": 143610126,
+    "sha256": "79698df0777e65fdc65adf250aa891de614ed3981f78665b686026819386c761",
     "on_screen_language": "en",
     "captions": "Burned-in English captions",
     "audio": "English narration (ElevenLabs preset voice); synthesized music and sound effects"
   },
   "web_video": {
-    "filename": "mcp-explained-v1-web.mp4",
-    "bytes": 60310111,
-    "sha256": "8f845bfe93ab6e9e95515b917b318063b19f555c6b05d07972ba1ed2c176b923"
+    "filename": "mcp-explained-v1.0.1-web.mp4",
+    "bytes": 60851126,
+    "sha256": "4e881b3e4d018ef7f9a74999211e12a38eb6439baf6d6063434a0eed7133cd4c"
   },
   "license": "CC-BY-4.0",
   "credit": "Scientific Animation Workflow contributors"
